@@ -2,6 +2,8 @@ package main
 
 import (
     "net/http"
+    "database/sql"
+    _ "github.com/mattn/go-sqlite3"
     "github.com/go-chi/chi"
     "GoOneRoster/routes"
 )
