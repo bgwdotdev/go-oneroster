@@ -2,6 +2,7 @@
 This project aims to implement a OneRoster compliant RESTful API webserver in GO with an SQL backend
 
 ## To Do
-- Connect to SQL database
+- ~~Connect to SQL database~~
+- Output JSON
 - Build endpoints
 - Implement security
