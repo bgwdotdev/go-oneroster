@@ -6,6 +6,13 @@ import (
     "GoOneRoster/routes"
 )
 
+// generic catch function for error handling
+func catch(err error) {
+    if err != nil {
+        panic(err)
+    }
+}
+
 func main() {
     r := chi.NewRouter()
 
@@ -16,6 +23,7 @@ func main() {
         r.Mount("/users", routes.Routes())
     })
 
+    r.Mount("/schools", routes.Routes())
     // Starts the webserver with the Router
     http.ListenAndServe(":3000", r)
 }
@@ -25,10 +33,4 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
     w.Write([]byte("Hello World!"))
 }
 
-/*
-// outputs user information
-func allUsers(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte("user: bob"))
-}
-*/
 
