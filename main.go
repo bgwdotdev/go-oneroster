@@ -35,7 +35,7 @@ func dbMake(db *sql.DB) {
     catch (err)
 }
 
-// Query database
+// Query database for name
 func dbOut(db *sql.DB) {
     var name string
     err := db.QueryRow("SELECT name FROM test").Scan(&name)
@@ -46,6 +46,7 @@ func dbOut(db *sql.DB) {
 func main() {
     r := chi.NewRouter()
 
+    // Create DB connection and execute
     db, err = sql.Open(dbDriver, dbDSN)
     catch (err)
     defer db.Close()
