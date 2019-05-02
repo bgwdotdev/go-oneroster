@@ -62,6 +62,7 @@ func main() {
 
     // Creates a root endpoint with get method returning helloWorld func results
     r.Get("/", helloWorld)
+    r.Get("/user", returnUser)
     // Creates a users endpoint that can have different methods attached to it
     r.Route("/v1", func (r chi.Router) {
         r.Mount("/users", routes.Routes())
@@ -75,12 +76,14 @@ func main() {
 // outputs hello world
 func helloWorld(w http.ResponseWriter, r *http.Request) {
     w.Write([]byte("Hello World!"))
-    // Queries database and returns name as json
+}
+
+// Queries database and returns name as json
+func returnUser(w http.ResponseWriter, r *http.Request) {
     n := dbOut(db)
     out := Out{
         Body: n,
     }
     render.JSON(w, r, out)
 }
-
 
