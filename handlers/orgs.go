@@ -37,3 +37,25 @@ func GetOrg(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 func AllUsers(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("user: bob"))
 }
+
+// JSON out per spec
+type JsonOrg struct {
+	Org []struct {
+		SourcedId        string // UUID
+		Status           string // Active || tobedeleted
+		DateLastModified string // date
+		Name             string
+		Type             string //school || local || state || national
+		Identifier       string
+		Parent           struct {
+			Href      string
+			SourcedId string
+			Type      string
+		}
+		Children []struct {
+			Href      string
+			SourcedId string
+			Type      string
+		}
+	}
+}
