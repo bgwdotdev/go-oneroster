@@ -18,16 +18,19 @@ type Out struct {
 // Queries database connection for Orgs
 func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Place holder
 		count := 10
 		start := 0
+
 		// Select results from table
 		statement := fmt.Sprintf("SELECT sourcedId, name FROM orgs LIMIT %d OFFSET %d", count, start)
 		rows, err := db.Query(statement)
 		if err != nil {
 			panic(err)
 		}
+
 		// Build results
-		orgs := []Org{}
+		var orgs []Org
 		for rows.Next() {
 			var org Org
 			err := rows.Scan(&org.SourcedId, &org.Name)
@@ -36,10 +39,12 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 			}
 			orgs = append(orgs, org)
 		}
+
 		// Wrap results in object
 		var output = struct {
 			Orgs []Org
 		}{orgs}
+
 		// Output results
 		render.JSON(w, r, output)
 	}
@@ -50,12 +55,16 @@ func GetOrg(db *sql.DB) http.HandlerFunc {
 		// Get object based off id from query
 		id := chi.URLParam(r, "id")
 		statement := fmt.Sprintf("SELECT sourcedId, name FROM orgs WHERE sourcedId='%v'", id)
+
 		var org Org
 		db.QueryRow(statement).Scan(&org.SourcedId, &org.Name)
+
 		// Wrap result
 		var output = struct {
 			Org Org
 		}{org}
+
+		// Output result
 		render.JSON(w, r, output)
 	}
 }
