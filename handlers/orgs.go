@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"github.com/go-chi/render"
 	// "github.com/google/uuid"
+	"fmt"
+	"github.com/go-chi/chi"
 	_ "github.com/mattn/go-sqlite3"
 	"net/http"
 )
@@ -16,22 +18,46 @@ type Out struct {
 // Queries database connection for Orgs
 func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var (
-			//	sourcedId uuid.UUID
-			name string
-		)
-		db.QueryRow("SELECT name FROM orgs").Scan(&name)
-		out := Out{
-			Body: name,
+		count := 10
+		start := 0
+		// Select results from table
+		statement := fmt.Sprintf("SELECT sourcedId, name FROM orgs LIMIT %d OFFSET %d", count, start)
+		rows, err := db.Query(statement)
+		if err != nil {
+			panic(err)
 		}
-		render.JSON(w, r, out)
+		// Build results
+		orgs := []Org{}
+		for rows.Next() {
+			var org Org
+			err := rows.Scan(&org.SourcedId, &org.Name)
+			if err != nil {
+				panic(err)
+			}
+			orgs = append(orgs, org)
+		}
+		// Wrap results in object
+		var output = struct {
+			Orgs []Org
+		}{orgs}
+		// Output results
+		render.JSON(w, r, output)
 	}
 }
 
-func GetOrg(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	// stuff here
-	// id := chi.URLParam(r, "id")
-	db.QueryRow("SELECT sourceId, name FROM orgs WHERE sourcedId=id")
+func GetOrg(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Get object based off id from query
+		id := chi.URLParam(r, "id")
+		statement := fmt.Sprintf("SELECT sourcedId, name FROM orgs WHERE sourcedId='%v'", id)
+		var org Org
+		db.QueryRow(statement).Scan(&org.SourcedId, &org.Name)
+		// Wrap result
+		var output = struct {
+			Org Org
+		}{org}
+		render.JSON(w, r, output)
+	}
 }
 
 func AllUsers(w http.ResponseWriter, r *http.Request) {
@@ -39,23 +65,21 @@ func AllUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 // JSON out per spec
-type JsonOrg struct {
-	Org []struct {
-		SourcedId        string // UUID
-		Status           string // Active || tobedeleted
-		DateLastModified string // date
-		Name             string
-		Type             string //school || local || state || national
-		Identifier       string
-		Parent           struct {
-			Href      string
-			SourcedId string
-			Type      string
-		}
-		Children []struct {
-			Href      string
-			SourcedId string
-			Type      string
-		}
+type Org struct {
+	SourcedId        string
+	Status           string
+	DateLastModified string
+	Name             string
+	Type             string
+	Identifier       string
+	Parent           struct {
+		Href      string
+		SourcedId string
+		Type      string
+	}
+	Children []struct {
+		Href      string
+		SourcedId string
+		Type      string
 	}
 }
