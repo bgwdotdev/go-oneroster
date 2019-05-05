@@ -3,16 +3,12 @@ package main
 import (
 	"GoOneRoster/conf"
 	"GoOneRoster/routes"
-	"database/sql"
-	"fmt"
 	"github.com/go-chi/chi"
-	"github.com/go-chi/render"
 	_ "github.com/mattn/go-sqlite3"
 	"net/http"
 )
 
 var (
-	db  *sql.DB
 	err error
 )
 
@@ -23,23 +19,18 @@ func catch(err error) {
 	}
 }
 
-// Basic JSON response structure
-type Out struct {
-	Body string `json:"body"`
-}
-
 func main() {
+	c, err := conf.Read()
+	catch(err)
 	r := chi.NewRouter()
 
 	// Create DB connection and execute
-	db, err = sql.Open(dbDriver, dbDSN)
-	catch(err)
+	db := conf.ConnectDatabase(c)
 	defer db.Close()
 
 	// Creates a users endpoint that can have different methods attached to it
 	r.Route("/v1", func(r chi.Router) {
-		r.Mount("/users", routes.Routes())
-		r.Mount("/orgs", routes.Orgs())
+		r.Mount("/", routes.Routes(db))
 	})
 
 	// Starts the webserver with the Router

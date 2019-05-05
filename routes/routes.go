@@ -2,21 +2,14 @@ package routes
 
 import (
 	"GoOneRoster/handlers"
+	"database/sql"
 	"github.com/go-chi/chi"
-	"github.com/google/uuid"
-	"net/http"
+	// "net/http"
 )
 
-func Routes() *chi.Mux {
+func Routes(db *sql.DB) *chi.Mux {
 	r := chi.NewRouter()
-	r.Get("/", handlers.allUsers)
-	return r
-}
-
-// Orgs endpoint
-func Orgs() *chi.Mux {
-	r := chi.NewRouter()
-	r.Get("/", handlers.getAllOrgs)
-	r.Get("/{id}", handlers.getOrg)
+	r.Get("/", handlers.AllUsers)
+	r.Get("/orgs", handlers.GetAllOrgs(db))
 	return r
 }
