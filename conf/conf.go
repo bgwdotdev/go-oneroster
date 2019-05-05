@@ -1,4 +1,4 @@
-package main
+package conf
 
 import (
 	"fmt"
@@ -15,7 +15,7 @@ type Config struct {
 }
 
 // Invokes Viper to read the configuration file
-func readConf() (Config, error) {
+func Read() (Config, error) {
 	var c Config
 
 	viper.SetConfigName("conf")
@@ -29,8 +29,4 @@ func readConf() (Config, error) {
 
 	err = viper.Unmarshal(&c)
 	return c, err
-}
-
-func main() {
-	readConf()
 }
