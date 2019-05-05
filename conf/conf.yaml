@@ -1,0 +1,4 @@
+port: "3000"
+database:
+    databaseDriver: "sqlite3"
+    dataSourceName: "OneRoster.sqlite3"

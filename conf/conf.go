@@ -1,14 +1,13 @@
 package conf
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
 )
 
 // Holds the config loaded from file
 type Config struct {
 	Port     int
-	Database []struct {
+	Database struct {
 		DatabaseDriver string
 		DataSourceName string
 	}
@@ -19,13 +18,13 @@ func Read() (Config, error) {
 	var c Config
 
 	viper.SetConfigName("conf")
-	viper.AddConfigPath(".")
-	viper.SetConfigType("hcl")
+	viper.AddConfigPath("./conf")
+	viper.SetConfigType("yaml")
+
 	err := viper.ReadInConfig()
 	if err != nil {
 		return Config{}, err
 	}
-	fmt.Println("Loaded conf.hcl")
 
 	err = viper.Unmarshal(&c)
 	return c, err
