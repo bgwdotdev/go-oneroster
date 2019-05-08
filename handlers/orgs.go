@@ -21,9 +21,12 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 		// Place holder
 		count := 10
 		start := 0
+		filterCol := 1
+		filterValue := 1
+		sort := "sourcedId"
 
 		// Select results from table
-		statement := fmt.Sprintf("SELECT sourcedId, name FROM orgs LIMIT %d OFFSET %d", count, start)
+		statement := fmt.Sprintf("SELECT sourcedId, name FROM orgs WHERE '%v' = '%v' ORDER BY '%v' LIMIT '%v' OFFSET '%v'", filterCol, filterValue, sort, count, start)
 		rows, err := db.Query(statement)
 		if err != nil {
 			panic(err)
