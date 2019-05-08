@@ -18,15 +18,18 @@ type Out struct {
 // Queries database connection for Orgs
 func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		sort := SortQuery(q)
 		// Place holder
 		count := 10
 		start := 0
 		filterCol := 1
 		filterValue := 1
-		sort := "sourcedId"
 
 		// Select results from table
 		statement := fmt.Sprintf("SELECT sourcedId, name FROM orgs WHERE '%v' = '%v' ORDER BY '%v' LIMIT '%v' OFFSET '%v'", filterCol, filterValue, sort, count, start)
+		fmt.Println(r.URL.Query())
+		fmt.Println(statement)
 		rows, err := db.Query(statement)
 		if err != nil {
 			panic(err)
