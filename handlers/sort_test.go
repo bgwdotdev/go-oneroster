@@ -30,3 +30,38 @@ func TestSortQuery(t *testing.T) {
 
 	// Cleanup
 }
+
+func TestQuery(t *testing.T) {
+	// setup
+	q := map[string][]string{
+		"sort":   []string{"name"},
+		"limit":  []string{"50"},
+		"offset": []string{"10"},
+		"random": []string{"value"},
+	}
+
+	d := map[string]string{
+		"sort":   "sourcedId",
+		"limit":  "100",
+		"offset": "0",
+	}
+
+	// Execution
+	for k, _ := range d {
+		if v, ok := q[k]; ok {
+			d[k] = v[0]
+		}
+	}
+
+	// validation
+	got := d
+	want := map[string]string{
+		"sort":   "name",
+		"limit":  "50",
+		"offset": "10",
+	}
+
+	if !reflect.DeepEqual(want, got) {
+		t.Fatalf("expected: %v, got %v", want, got)
+	}
+}

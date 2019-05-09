@@ -19,15 +19,15 @@ type Out struct {
 func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
-		sort := SortQuery(q)
+		v := Query(q)
 		// Place holder
-		count := 10
-		start := 0
 		filterCol := 1
 		filterValue := 1
 
 		// Select results from table
-		statement := fmt.Sprintf("SELECT sourcedId, name FROM orgs WHERE '%v' = '%v' ORDER BY '%v' LIMIT '%v' OFFSET '%v'", filterCol, filterValue, sort, count, start)
+		statement := fmt.Sprintf("SELECT sourcedId, name FROM orgs WHERE '%v' = '%v' ORDER BY '%v' LIMIT '%v' OFFSET '%v'",
+			filterCol, filterValue, v["sort"], v["limit"], v["offset"])
+		// replace with logging
 		fmt.Println(r.URL.Query())
 		fmt.Println(statement)
 		rows, err := db.Query(statement)
