@@ -40,6 +40,7 @@ func Query(q url.Values) map[string]string {
 		"sort":   "sourcedId",
 		"limit":  "100",
 		"offset": "0",
+		"filter": "'1'='1'",
 	}
 
 	for k, _ := range d {

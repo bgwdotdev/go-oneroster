@@ -38,12 +38,14 @@ func TestQuery(t *testing.T) {
 		"limit":  []string{"50"},
 		"offset": []string{"10"},
 		"random": []string{"value"},
+		"filter": []string{"id='2'"},
 	}
 
 	d := map[string]string{
 		"sort":   "sourcedId",
 		"limit":  "100",
 		"offset": "0",
+		"filter": "'1' = '1'",
 	}
 
 	// Execution
@@ -59,6 +61,7 @@ func TestQuery(t *testing.T) {
 		"sort":   "name",
 		"limit":  "50",
 		"offset": "10",
+		"filter": "id='2'",
 	}
 
 	if !reflect.DeepEqual(want, got) {
