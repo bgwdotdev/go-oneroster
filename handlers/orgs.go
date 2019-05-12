@@ -33,19 +33,16 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 		}
 
 		// Build results
-		var orgs []Org
+		//var orgs []Org
+		var orgs []map[string]interface{}
 		for rows.Next() {
-			var org Org
-			err := rows.Scan(&org.SourcedId, &org.Name)
-			if err != nil {
-				panic(err)
-			}
+			org := FormatResults(rows)
 			orgs = append(orgs, org)
 		}
 
 		// Wrap results in object
 		var output = struct {
-			Orgs []Org
+			Orgs []map[string]interface{} `json:"orgs"`
 		}{orgs}
 
 		// Output results

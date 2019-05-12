@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"testing"
@@ -46,6 +47,7 @@ func TestQuery(t *testing.T) {
 		"limit":  "100",
 		"offset": "0",
 		"filter": "'1' = '1'",
+		"field":  "sourcedId,name",
 	}
 
 	// Execution
@@ -62,9 +64,63 @@ func TestQuery(t *testing.T) {
 		"limit":  "50",
 		"offset": "10",
 		"filter": "id='2'",
+		"field":  "sourcedId,name",
 	}
 
 	if !reflect.DeepEqual(want, got) {
 		t.Fatalf("expected: %v, got %v", want, got)
 	}
+}
+
+func TestFormatResults(t *testing.T) {
+	// setup
+	// Results from an SQL row
+	cols := []string{"id", "sourcedId"}
+	rows := struct {
+		id        string
+		sourcedId string
+	}{
+		"1",
+		"ab-2",
+	}
+
+	// execute
+	// results store
+	r := make(map[string]interface{})
+	// column
+	cv := make([]interface{}, len(cols))
+	// column pointer
+	cvp := make([]interface{}, len(cols))
+	// assign col to point
+	for i, _ := range cv {
+		cvp[i] = &cv[i]
+	}
+
+	// rows.Scan(&cvp)
+	cvp[0] = rows.id
+	cvp[1] = rows.sourcedId
+
+	// set result col name and value
+	for i, c := range cols {
+		v := cvp[i]
+		r[c] = v
+	}
+
+	_, err := json.Marshal(r)
+	if err != nil {
+		panic(err)
+	}
+
+	// validate
+	got := r
+	want := map[string]interface{}{
+		"id":        "1",
+		"sourcedId": "ab-2",
+	}
+	if !reflect.DeepEqual(want, got) {
+		t.Fatalf("expected: %v, got %v", want, got)
+	}
+
+	// cleanup
+
 }
