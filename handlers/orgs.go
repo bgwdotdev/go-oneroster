@@ -22,22 +22,29 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 		v := Query(q)
 
 		// Select results from table
-		statement := fmt.Sprintf("SELECT sourcedId, name FROM orgs WHERE %v ORDER BY '%v' LIMIT '%v' OFFSET '%v'",
-			v["filter"], v["sort"], v["limit"], v["offset"])
-		// replace with logging
-		fmt.Println(r.URL.Query())
-		fmt.Println(statement)
-		rows, err := db.Query(statement)
+		stmt, err := db.Prepare("SELECT ? FROM orgs WHERE ?=? ORDER BY ? LIMIT ? OFFSET ?")
 		if err != nil {
 			panic(err)
 		}
+		defer stmt.Close()
+
+		// replace with logging
+		fmt.Println(r.URL.Query())
+		rows, err := stmt.Query(v["filter"], v["filter"], v["sort"], v["limit"], v["offset"])
+		if err != nil {
+			panic(err)
+		}
+		defer rows.Close()
 
 		// Build results
-		//var orgs []Org
 		var orgs []map[string]interface{}
 		for rows.Next() {
 			org := FormatResults(rows)
 			orgs = append(orgs, org)
+		}
+		err = rows.Err()
+		if err != nil {
+			panic(err)
 		}
 
 		// Wrap results in object
