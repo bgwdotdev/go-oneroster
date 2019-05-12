@@ -20,9 +20,14 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
 		v := Query(q)
+		f, err := ValidateFields(q, publicCols)
+		if err != nil {
+			// status error: warning, invalidate_selection_field
+		}
 
 		// Select results from table
-		stmt, err := db.Prepare("SELECT ? FROM orgs WHERE ?=? ORDER BY ? LIMIT ? OFFSET ?")
+		statement := fmt.Sprintf("SELECT %v FROM orgs WHERE ?=? ORDER BY ? LIMIT ? OFFSET ?", f)
+		stmt, err := db.Prepare(statement)
 		if err != nil {
 			panic(err)
 		}
@@ -30,6 +35,7 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 
 		// replace with logging
 		fmt.Println(r.URL.Query())
+
 		rows, err := stmt.Query(v["filter"], v["filter"], v["sort"], v["limit"], v["offset"])
 		if err != nil {
 			panic(err)
@@ -78,6 +84,15 @@ func GetOrg(db *sql.DB) http.HandlerFunc {
 
 func AllUsers(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("user: bob"))
+}
+
+var publicCols = []string{"sourcedId",
+	"status",
+	"dateLastModified",
+	"name",
+	"type",
+	"identifier",
+	"parentSourcedId",
 }
 
 // JSON out per spec
