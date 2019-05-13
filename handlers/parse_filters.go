@@ -49,17 +49,20 @@ func ParseFilters(q map[string][]string) ([]map[string]string, string) {
 	value := regexp.MustCompile(`([']\S*['])`)
 	for i, v := range vs {
 		m := make(map[string]string)
-
+		// Parse parameters
 		f := field.FindString(v)
-		m["field"] = f
-
 		p := predicate.FindString(v)
-		m["predicate"] = p
-
 		val := value.FindString(v)
 		val = removeSingleQuotes(val)
-		m["value"] = val
+		// Convert to SQL like statement
+		if p == "~" {
+			p = " LIKE "
+			val = "%" + val + "%"
+		}
 
+		m["field"] = f
+		m["predicate"] = p
+		m["value"] = val
 		ms[i] = m
 	}
 	return ms, lo
