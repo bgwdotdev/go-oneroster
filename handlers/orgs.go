@@ -20,23 +20,29 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
 		v := Query(q)
-		f, err := ValidateFields(q, publicCols)
+		fields, err := ValidateFields(q, publicCols)
 		if err != nil {
-			// status error: warning, invalidate_selection_field
+			// TODO: status error: warning, invalidate_selection_field
 		}
+		// TODO: run filters["field"] through ValidateFields
+		filters, logicalOp := ParseFilters(q)
 
 		// Select results from table
-		statement := fmt.Sprintf("SELECT %v FROM orgs WHERE ?=? ORDER BY ? LIMIT ? OFFSET ?", f)
+		statement := fmt.Sprintf("SELECT %v FROM orgs WHERE %v%v? %v %v%v? ORDER BY ? LIMIT ? OFFSET ?",
+			fields,
+			filters[0]["field"], filters[0]["predicate"],
+			logicalOp,
+			filters[1]["field"], filters[1]["predicate"])
 		stmt, err := db.Prepare(statement)
 		if err != nil {
 			panic(err)
 		}
 		defer stmt.Close()
 
-		// replace with logging
+		// TODO: replace with logging
 		fmt.Println(r.URL.Query())
 
-		rows, err := stmt.Query(v["filter"], v["filter"], v["sort"], v["limit"], v["offset"])
+		rows, err := stmt.Query(filters[0]["value"], filters[1]["value"], v["sort"], v["limit"], v["offset"])
 		if err != nil {
 			panic(err)
 		}
