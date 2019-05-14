@@ -19,7 +19,7 @@ func ValidateFields(q map[string][]string, c []string) (string, error) {
 
 	fields := strings.Split(v, ",")
 	for _, s := range fields {
-		col, err := validateField(c, s)
+		col, err := validateField(s, c)
 		if err != nil {
 			return all, err
 		}
@@ -31,7 +31,7 @@ func ValidateFields(q map[string][]string, c []string) (string, error) {
 }
 
 // Compares a single field from a query against a slice of column names
-func validateField(c []string, s string) (string, error) {
+func validateField(s string, c []string) (string, error) {
 	var f string
 	for _, cn := range c {
 		if cn == s {
