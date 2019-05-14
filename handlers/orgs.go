@@ -25,7 +25,7 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 			// TODO: status error: warning, invalidate_selection_field
 		}
 		// TODO: run filters["field"] through ValidateFields
-		filters, logicalOp := ParseFilters(q)
+		filters, logicalOp := ParseFilters(q, publicCols)
 
 		// Select results from table
 		statement := fmt.Sprintf("SELECT %v FROM orgs WHERE %v%v? %v %v%v? ORDER BY ? LIMIT ? OFFSET ?",

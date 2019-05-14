@@ -6,7 +6,7 @@ import (
 )
 
 // Takes a url query and converts it into map of filter parameters
-func ParseFilters(q map[string][]string) ([]map[string]string, string) {
+func ParseFilters(q map[string][]string, cols []string) ([]map[string]string, string) {
 	// Set default output
 	d := map[string]string{
 		"field":     "'1'",
@@ -54,6 +54,11 @@ func ParseFilters(q map[string][]string) ([]map[string]string, string) {
 		p := predicate.FindString(v)
 		val := value.FindString(v)
 		val = removeSingleQuotes(val)
+		// Validate field column name
+		f, err := validateField(f, cols)
+		if err != nil {
+			//TODO: return web 4xx error
+		}
 		// Convert to SQL like statement
 		if p == "~" {
 			p = " LIKE "
