@@ -10,14 +10,10 @@ import (
 	"net/http"
 )
 
-// Basic JSON response structure
-type Out struct {
-	Body string `json:"body"`
-}
-
 // Queries database connection for Orgs
 func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		t := "orgs"
 		q := r.URL.Query()
 		v := Query(q)
 		fields, err := ValidateFields(q, publicCols)
@@ -28,8 +24,8 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 		filters, logicalOp := ParseFilters(q, publicCols)
 
 		// Select results from table
-		statement := fmt.Sprintf("SELECT %v FROM orgs WHERE %v%v? %v %v%v? ORDER BY ? LIMIT ? OFFSET ?",
-			fields,
+		statement := fmt.Sprintf("SELECT %v FROM %v WHERE %v%v? %v %v%v? ORDER BY ? LIMIT ? OFFSET ?",
+			fields, t,
 			filters[0]["field"], filters[0]["predicate"],
 			logicalOp,
 			filters[1]["field"], filters[1]["predicate"])
