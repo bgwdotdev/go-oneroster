@@ -52,8 +52,8 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 		var orgs []map[string]interface{}
 		for rows.Next() {
 			org := FormatResults(rows)
-			children := QueryNestedProperty("orgs", "parentSourcedId", org["sourcedId"], db)
-			org["children"] = children
+			org["children"] = QueryNestedProperty("orgs", "parentSourcedId", org["sourcedId"], db)
+			org["parent"] = QueryNestedProperty("orgs", "sourcedId", org["parentSourcedId"], db)
 			orgs = append(orgs, org)
 		}
 		err = rows.Err()
