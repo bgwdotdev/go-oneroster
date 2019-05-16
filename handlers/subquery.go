@@ -9,7 +9,6 @@ import (
 func QueryNestedProperty(t, c string, id interface{}, db *sql.DB) []map[string]interface{} {
 	statement := fmt.Sprintf("SELECT sourcedId, type FROM %v WHERE %v='%v'", t, c, id)
 
-	fmt.Println(statement)
 	stmt, err := db.Prepare(statement)
 	if err != nil {
 		panic(err)
