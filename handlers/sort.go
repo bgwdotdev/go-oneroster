@@ -75,7 +75,7 @@ func FormatResults(rows *sql.Rows) map[string]interface{} {
 	}
 
 	for i, c := range cols {
-		v := cvp[i]
+		v := cv[i]
 		out[c] = v
 	}
 

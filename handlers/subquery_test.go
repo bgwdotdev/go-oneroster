@@ -21,10 +21,12 @@ func TestNestedProperty() {
 		},
 	}
 	sourcedId := "123"
+	col := "parentSourcedId"
+	table := "orgs"
 
 	// execute
 	fmt.Println(o)
-	stmt := fmt.Sprintf("SELECT sourcedId, type FROM orgs WHERE parentSourcedId=%v", sourcedId)
+	stmt := fmt.Sprintf("SELECT sourcedId, type FROM %v WHERE %v='%v'", table, col, sourcedId)
 
 	children := o["children"]
 	for rows.Next() {
