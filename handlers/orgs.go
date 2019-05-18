@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"github.com/go-chi/render"
 	// "github.com/google/uuid"
+	data "GoOneRoster/db"
+	"GoOneRoster/parameters"
 	"fmt"
 	"github.com/go-chi/chi"
 	_ "github.com/mattn/go-sqlite3"
@@ -14,45 +16,22 @@ import (
 func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t := "orgs"
-		q := r.URL.Query()
-		v := Query(q)
-		fields, err := ValidateFields(q, publicCols)
-		if err != nil {
-			// TODO: status error: warning, invalidate_selection_field
-		}
-		// TODO: run filters["field"] through ValidateFields
-		filters, logicalOp := ParseFilters(q, publicCols)
-
-		// Select results from table
-		statement := fmt.Sprintf("SELECT %v FROM %v WHERE %v%v? %v %v%v? ORDER BY ? LIMIT ? OFFSET ?",
-			fields, t,
-			filters[0]["field"], filters[0]["predicate"],
-			logicalOp,
-			filters[1]["field"], filters[1]["predicate"])
-		stmt, err := db.Prepare(statement)
-		if err != nil {
-			panic(err)
-		}
-		defer stmt.Close()
-
+		q := r.URL
+		params := parameters.ParseUrl(q, publicCols)
+		rows := data.QueryProperties(t, publicCols, params, db)
+		defer rows.Close()
 		// TODO: replace with logging
 		fmt.Println(r.URL.Query())
-
-		rows, err := stmt.Query(filters[0]["value"], filters[1]["value"], v["sort"], v["limit"], v["offset"])
-		if err != nil {
-			panic(err)
-		}
-		defer rows.Close()
 
 		// Build results
 		var orgs []map[string]interface{}
 		for rows.Next() {
-			org := FormatResults(rows)
-			org["children"] = QueryNestedProperty("orgs", "parentSourcedId", org["sourcedId"], db)
-			org["parent"] = QueryNestedProperty("orgs", "sourcedId", org["parentSourcedId"], db)
+			org := parameters.FormatResults(rows)
+			org["children"] = data.QueryNestedProperty("orgs", "parentSourcedId", org["sourcedId"], db)
+			org["parent"] = data.QueryNestedProperty("orgs", "sourcedId", org["parentSourcedId"], db)
 			orgs = append(orgs, org)
 		}
-		err = rows.Err()
+		err := rows.Err()
 		if err != nil {
 			panic(err)
 		}
