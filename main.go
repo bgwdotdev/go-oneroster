@@ -2,6 +2,7 @@ package main
 
 import (
 	"GoOneRoster/conf"
+	data "GoOneRoster/db"
 	"GoOneRoster/routes"
 	"github.com/go-chi/chi"
 	_ "github.com/mattn/go-sqlite3"
@@ -25,7 +26,7 @@ func main() {
 	r := chi.NewRouter()
 
 	// Create DB connection and execute
-	db := conf.ConnectDatabase(c)
+	db := data.ConnectDatabase(c)
 	defer db.Close()
 
 	// Creates a users endpoint that can have different methods attached to it

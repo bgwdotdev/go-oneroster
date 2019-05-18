@@ -8,7 +8,7 @@ import (
 
 var err error
 
-func ConnectDatabase(c *conf.Config) *sql.DB {
+func ConnectDatabase(c conf.Config) *sql.DB {
 	var conn *sql.DB
 	conn, err = sql.Open(c.Database.DatabaseDriver, c.Database.DataSourceName)
 	if err != nil {

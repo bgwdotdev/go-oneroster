@@ -12,7 +12,7 @@ func ValidateFields(q map[string][]string, c []string) (string, error) {
 	all := strings.Join(c, ", ")
 
 	// if no field key, return all/default columns
-	if _, ok := q["field"]; !ok {
+	if _, ok := q["fields"]; !ok {
 		return all, nil
 	}
 	v := q["fields"][0]

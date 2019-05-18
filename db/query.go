@@ -10,9 +10,10 @@ import (
 )
 
 // Queries the database based off endpoint
-func QueryProperties(t string, c []string, p *parameters.Parameters, db *sql.DB) *sql.Rows {
+func QueryProperties(t string, c []string, p parameters.Parameters, db *sql.DB) *sql.Rows {
 	// Build Dynamic where query
-	w := fmt.Sprintf("%v%v? %v %v%v?", p.Filter1.Field, p.Filter1.Predicate,
+	w := fmt.Sprintf("%v%v? %v %v%v?",
+		p.Filter1.Field, p.Filter1.Predicate,
 		p.LogicalOperator,
 		p.Filter2.Field, p.Filter2.Predicate)
 	// Convert string to uint64
@@ -29,7 +30,7 @@ func QueryProperties(t string, c []string, p *parameters.Parameters, db *sql.DB)
 	s, args, err := squirrel.
 		Select(p.Fields).
 		From(t).
-		Where(w, p.Filter1.Value, p.Filter1.Value).
+		Where(w).
 		OrderBy(p.Sort).
 		Limit(limit).
 		Offset(offset).
@@ -47,7 +48,7 @@ func QueryProperties(t string, c []string, p *parameters.Parameters, db *sql.DB)
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.Query()
+	rows, err := stmt.Query(p.Filter1.Value, p.Filter1.Value)
 	if err != nil {
 		panic(err)
 	}
