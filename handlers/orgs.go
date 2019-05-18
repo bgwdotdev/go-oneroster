@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi"
 	_ "github.com/mattn/go-sqlite3"
 	"net/http"
+	"strings"
 )
 
 // Queries database connection for Orgs
@@ -27,8 +28,10 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 		var orgs []map[string]interface{}
 		for rows.Next() {
 			org := parameters.FormatResults(rows)
-			org["children"] = data.QueryNestedProperty("orgs", "parentSourcedId", org["sourcedId"], db)
-			org["parent"] = data.QueryNestedProperty("orgs", "sourcedId", org["parentSourcedId"], db)
+			if strings.Contains(params.Fields, "parent") {
+				org["children"] = data.QueryNestedProperty("orgs", "parentSourcedId", org["sourcedId"], db)
+				org["parent"] = data.QueryNestedProperty("orgs", "sourcedId", org["parentSourcedId"], db)
+			}
 			orgs = append(orgs, org)
 		}
 		err := rows.Err()
