@@ -1,6 +1,7 @@
 package db
 
 import (
+	"GoOneRoster/parameters"
 	"database/sql"
 	"fmt"
 )
@@ -22,7 +23,7 @@ func QueryNestedProperty(t, c string, id interface{}, db *sql.DB) []map[string]i
 
 	var rs []map[string]interface{}
 	for rows.Next() {
-		r := FormatResults(rows)
+		r := parameters.FormatResults(rows)
 		rs = append(rs, r)
 	}
 	err = rows.Err()
