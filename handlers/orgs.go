@@ -29,9 +29,9 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 		for rows.Next() {
 			org := parameters.FormatResults(rows)
 			if strings.Contains(params.Fields, "parent") {
-				org["children"] = data.QueryNestedProperty("orgs", "parentSourcedId", org["sourcedId"], db)
-				org["parent"] = data.QueryNestedProperty("orgs", "sourcedId", org["parentSourcedId"], db)
+				org["parent"] = data.QueryNestedProperty("orgs", "sourcedId", org["parentSourcedId"], db, q)
 			}
+			delete(org, "parentSourcedId")
 			orgs = append(orgs, org)
 		}
 		err := rows.Err()
@@ -57,6 +57,7 @@ func GetOrg(db *sql.DB) http.HandlerFunc {
 
 		var org Org
 		db.QueryRow(statement).Scan(&org.SourcedId, &org.Name)
+		//org["children"] = data.QueryNestedProperty("orgs", "parentSourcedId", org["sourcedId"], db)
 
 		// Wrap result
 		var output = struct {
