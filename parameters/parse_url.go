@@ -1,7 +1,6 @@
 package parameters
 
 import (
-	"fmt"
 	"net/url"
 )
 
@@ -23,14 +22,14 @@ type filter struct {
 
 // Parses parameter values from the query and returns structured, validated data
 func ParseUrl(u *url.URL, c []string) Parameters {
-	q := u.URL.Query()
+	q := u.Query()
 
 	slo := SortLimitOffset(q)
 	fields, err := ValidateFields(q, c)
 	if err != nil {
 		// TODO: return; status error, warning, invalid_selection_field
 	}
-	filters, logicalOp := ParseFilter(q, c)
+	filters, logicalOp := ParseFilters(q, c)
 
 	var fs []filter
 	for _, v := range filters {
@@ -39,6 +38,7 @@ func ParseUrl(u *url.URL, c []string) Parameters {
 			v["predicate"],
 			v["value"],
 		}
+		fs = append(fs, f)
 	}
 	p := Parameters{
 		Sort:            slo["sort"],

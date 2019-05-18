@@ -1,7 +1,6 @@
 package parameters
 
 import (
-	"database/sql"
 	"net/url"
 )
 
