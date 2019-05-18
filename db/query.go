@@ -48,7 +48,7 @@ func QueryProperties(t string, c []string, p parameters.Parameters, db *sql.DB) 
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.Query(p.Filter1.Value, p.Filter1.Value)
+	rows, err := stmt.Query(p.Filter1.Value, p.Filter2.Value)
 	if err != nil {
 		panic(err)
 	}
