@@ -24,7 +24,7 @@ type filter struct {
 func ParseUrl(u *url.URL, c []string) Parameters {
 	q := u.Query()
 
-	slo := SortLimitOffset(q)
+	slo := SortLimitOffset(q, c)
 	fields, err := ValidateFields(q, c)
 	if err != nil {
 		// TODO: return; status error, warning, invalid_selection_field
