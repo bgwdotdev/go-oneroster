@@ -22,6 +22,13 @@ func ValidateFields(q map[string][]string, c []string) (string, error) {
 		col, err := validateField(s, c)
 		if err != nil {
 			return all, err
+			/*
+				CodeMajor : Success
+				Severity : warning
+				CodeMinor : invalid_select_field
+				StatusCode : 200
+				Description : Unknown field(s) %v
+			*/
 		}
 		columns = append(columns, col)
 	}

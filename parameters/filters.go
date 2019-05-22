@@ -34,6 +34,13 @@ func parseFilter(v string, cols []string) (map[string]string, error) {
 	f, err := parseFilterField(v, cols)
 	if err != nil {
 		//TODO: return web 4xx error no match
+		/*
+			CodeMajor : failure
+			Severity : error
+			CodeMinor : invalid_filter_field
+			StatusCode : 400
+			Description : Unknown field(s) %v
+		*/
 	}
 	p := parseFilterPredicate(v)
 	val := parseFilterValue(v)
