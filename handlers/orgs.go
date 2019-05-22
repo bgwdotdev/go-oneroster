@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/go-chi/chi"
 	_ "github.com/mattn/go-sqlite3"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 )
@@ -16,13 +17,12 @@ import (
 // Queries database connection for Orgs
 func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Info(r)
 		t := "orgs"
 		q := r.URL
 		params := parameters.ParseUrl(q, publicCols)
 		rows := data.QueryProperties(t, publicCols, params, db)
 		defer rows.Close()
-		// TODO: replace with logging
-		fmt.Println(r.URL.Query())
 
 		// Build results
 		var orgs []map[string]interface{}
@@ -41,10 +41,13 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 
 		// Wrap results in object
 		var output = struct {
+			// TODO: links (HTTP link header / HTTP Header: x-total-count
+			// TODO: []error
 			Orgs []map[string]interface{} `json:"orgs"`
 		}{orgs}
 
 		// Output results
+		render.Status(r, http.StatusOK)
 		render.JSON(w, r, output)
 	}
 }
