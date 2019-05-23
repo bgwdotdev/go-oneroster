@@ -14,6 +14,8 @@ type Error struct {
 	CodeMinor   string `json:"codeMinor"`
 }
 
+func (e *Error) Error() string { return e.CodeMinor }
+
 func (e *Error) Payload(w http.ResponseWriter, r *http.Request) {
 	e = validateCodeMinor(e)
 	log.Info(e)
