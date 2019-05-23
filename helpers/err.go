@@ -1,4 +1,4 @@
-package handlers
+package helpers
 
 import (
 	"github.com/go-chi/render"
@@ -10,18 +10,18 @@ type Error struct {
 	StatusCode  int    `json:"-"`
 	CodeMajor   string `json:"codeMajor"`
 	Severity    string `json:"severity"`
-	Description string `json:"description"`
+	Description error  `json:"description"`
 	CodeMinor   string `json:"codeMinor"`
 }
 
-func (e Error) Payload(w http.ResponseWriter, r *http.Request) {
+func (e *Error) Payload(w http.ResponseWriter, r *http.Request) {
 	e = validateCodeMinor(e)
 	log.Info(e)
 	render.Status(r, e.StatusCode)
 	render.JSON(w, r, e)
 }
 
-func validateCodeMinor(e Error) Error {
+func validateCodeMinor(e *Error) *Error {
 	c := e.CodeMinor
 	switch c {
 	case "full success":
