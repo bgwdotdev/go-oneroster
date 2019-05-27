@@ -69,9 +69,9 @@ func validateCodeMinor(e *Error) *Error {
 
 	switch e.CodeMajor {
 	case "failure":
-		e.IsInvalid == true
+		e.IsInvalid = true
 	default:
-		e.IsInvalid == false
+		e.IsInvalid = false
 	}
 
 	return e
