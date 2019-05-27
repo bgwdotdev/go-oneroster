@@ -2,7 +2,6 @@ package parameters
 
 import (
 	"GoOneRoster/helpers"
-	"errors"
 	log "github.com/sirupsen/logrus"
 	"strings"
 )
@@ -23,11 +22,9 @@ func ValidateFields(q map[string][]string, c []string) (string, error) {
 	for _, s := range fields {
 		col, err := validateField(s, c)
 		if err != nil {
-			var e helpers.Error
-			e.Description = err
-			e.CodeMinor = "invalid_select_field"
-			log.Info(&e)
-			return all, &e
+			err.(*helpers.Error).CodeMinor = "invalid_select_field"
+			log.Info(err)
+			return all, err
 			/*
 				CodeMajor : Success
 				Severity : warning
@@ -51,10 +48,10 @@ func validateField(s string, c []string) (string, error) {
 			f = cn
 		}
 	}
+
 	if f == "" {
-		err := errors.New("No field match")
-		return s, err
-	} else {
-		return f, nil
+		return s, &helpers.Error{Description: "No field match"}
 	}
+
+	return f, nil
 }
