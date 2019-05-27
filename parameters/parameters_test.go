@@ -1,6 +1,7 @@
 package parameters
 
 import (
+	"net/url"
 	"testing"
 )
 
@@ -32,5 +33,21 @@ func defaults() f {
 	return f{
 		a: "a",
 		b: "b",
+	}
+}
+
+func TestUrlGet(t *testing.T) {
+	// setup
+	q, _ := url.ParseQuery(`x=1&y=1`)
+	want := "1"
+	// execute
+	qv := q.Get("x")
+	var got string
+	if qv != "" {
+		got = qv
+	}
+	// validate
+	if got != want {
+		t.Errorf("got: %v; want %v", got, want)
 	}
 }
