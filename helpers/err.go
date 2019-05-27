@@ -1,21 +1,17 @@
-package helpers
+package main
 
-import (
-	"github.com/go-chi/render"
-	log "github.com/sirupsen/logrus"
-	"net/http"
-)
+import ()
 
 type invalid interface {
 	Invalid() bool
 }
 
 func IsInvalid(e error) bool {
-	ie, ok := e.(invalid)
-	return ok && ie.Invalid()
+	t, ok := e.(invalid)
+	return ok && t.Invalid()
 }
 
-type Error struct {
+type ErrorObject struct {
 	StatusCode  int    `json:"-"`
 	CodeMajor   string `json:"codeMajor"`
 	Severity    string `json:"severity"`
@@ -24,18 +20,11 @@ type Error struct {
 	IsInvalid   bool   `json:"-"`
 }
 
-func (e *Error) Error() string { return e.Description }
+func (e *ErrorObject) Error() string { return e.Description }
 
-func (e *Error) Invalid() bool { return e.IsInvalid }
+func (e *ErrorObject) Invalid() bool { return e.IsInvalid }
 
-func (e *Error) Payload(w http.ResponseWriter, r *http.Request) {
-	e = validateCodeMinor(e)
-	log.Info(e)
-	render.Status(r, e.StatusCode)
-	render.JSON(w, r, e)
-}
-
-func validateCodeMinor(e *Error) *Error {
+func (e *ErrorObject) Populate() {
 	switch e.CodeMinor {
 	case "full success":
 		e.StatusCode = http.StatusOK
@@ -65,14 +54,15 @@ func validateCodeMinor(e *Error) *Error {
 		e.StatusCode = http.StatusTooManyRequests
 		e.CodeMajor = "failure"
 		e.Severity = "error"
+	default:
+		e.StatusCode = http.StatusInternalServerError
+		e.CodeMajor = "failure"
+		e.Severity = "erorr"
 	}
-
 	switch e.CodeMajor {
 	case "failure":
 		e.IsInvalid = true
 	default:
 		e.IsInvalid = false
 	}
-
-	return e
 }
