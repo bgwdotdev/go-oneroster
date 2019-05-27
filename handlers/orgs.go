@@ -19,22 +19,27 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Info(r)
 		t := "orgs"
-		q := r.URL
-		params := parameters.ParseUrl(q, publicCols)
-		rows := data.QueryProperties(t, publicCols, params, db)
+		q := r.URL.Query()
+		var p parameters.Parameters
+		p.SetLimit(q)
+		p.SetOffset(q)
+		err := p.SetSort(q, publicCols)
+		err = p.SetFields(q, publicCols)
+		err = p.SetFilters(q, publicCols)
+		rows := data.QueryProperties(t, publicCols, p, db)
 		defer rows.Close()
 
 		// Build results
 		var orgs []map[string]interface{}
 		for rows.Next() {
-			org := parameters.FormatResults(rows)
-			if strings.Contains(params.Fields, "parent") {
-				org["parent"] = data.QueryNestedProperty("orgs", "sourcedId", org["parentSourcedId"], db, q)
+			org := data.FormatResults(rows)
+			if strings.Contains(p.Fields, "parent") {
+				org["parent"] = data.QueryNestedProperty("orgs", "sourcedId", org["parentSourcedId"], db, r.URL)
 			}
 			delete(org, "parentSourcedId")
 			orgs = append(orgs, org)
 		}
-		err := rows.Err()
+		err = rows.Err()
 		if err != nil {
 			panic(err)
 		}

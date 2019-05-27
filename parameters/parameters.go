@@ -24,7 +24,7 @@ type filter struct {
 	Value     string
 }
 
-func (p *Parameters) SetSort(q *url.Values, col []string) error {
+func (p *Parameters) SetSort(q url.Values, col []string) error {
 	p.Sort = "sourcedId"
 	qv := q.Get("sort")
 	if qv != "" {
@@ -38,7 +38,7 @@ func (p *Parameters) SetSort(q *url.Values, col []string) error {
 	return nil
 }
 
-func (p *Parameters) SetLimit(q *url.Values) {
+func (p *Parameters) SetLimit(q url.Values) {
 	p.Limit = "100"
 	qv := q.Get("limit")
 	if qv != "" {
@@ -46,7 +46,7 @@ func (p *Parameters) SetLimit(q *url.Values) {
 	}
 }
 
-func (p *Parameters) SetOffset(q *url.Values) {
+func (p *Parameters) SetOffset(q url.Values) {
 	p.Offset = "0"
 	qv := q.Get("offset")
 	if qv != "" {
@@ -54,7 +54,7 @@ func (p *Parameters) SetOffset(q *url.Values) {
 	}
 }
 
-func (p *Parameters) SetFields(q *url.Values, col []string) error {
+func (p *Parameters) SetFields(q url.Values, col []string) error {
 	p.Fields = strings.Join(col, ", ")
 
 	qv := q.Get("fields")
@@ -75,7 +75,7 @@ func (p *Parameters) SetFields(q *url.Values, col []string) error {
 	return nil
 }
 
-func (p *Parameters) SetFilters(q *url.Values, col []string) error {
+func (p *Parameters) SetFilters(q url.Values, col []string) error {
 	fltd := defaultFilter()
 	flts := [2]filter{fltd, fltd}
 	p.LogicalOperator = " AND "
