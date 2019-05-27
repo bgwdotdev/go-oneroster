@@ -1,7 +1,6 @@
 package db
 
 import (
-	"GoOneRoster/parameters"
 	"database/sql"
 	"fmt"
 	"net/url"
@@ -24,7 +23,7 @@ func QueryNestedProperty(t, c string, id interface{}, db *sql.DB, u *url.URL) []
 
 	var rs []map[string]interface{}
 	for rows.Next() {
-		r := parameters.FormatResults(rows)
+		r := FormatResults(rows)
 		r["type"] = t
 		r["href"] = u.Host + "/v1/" + t + "/" + id.(string)
 		rs = append(rs, r)
