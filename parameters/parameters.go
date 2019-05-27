@@ -31,6 +31,7 @@ func (p *Parameters) SetSort(q url.Values, col []string) error {
 		v, err := validateField(qv, col)
 		if err != nil {
 			err.(*helpers.ErrorObject).CodeMinor = "invalid_sort_field"
+			err.(*helpers.ErrorObject).Populate()
 			return err
 		}
 		p.Sort = v
@@ -65,6 +66,7 @@ func (p *Parameters) SetFields(q url.Values, col []string) error {
 			c, err := validateField(f, col)
 			if err != nil {
 				err.(*helpers.ErrorObject).CodeMinor = "invalid_select_field"
+				err.(*helpers.ErrorObject).Populate()
 				return err
 			}
 			cols = append(cols, c)
@@ -156,6 +158,7 @@ func (f *filter) field(s string, col []string) error {
 	fld, err := validateField(v, col)
 	if err != nil {
 		err.(*helpers.ErrorObject).CodeMinor = "invalid_filter_field"
+		err.(*helpers.ErrorObject).Populate()
 		return err
 	}
 	f.Field = fld
