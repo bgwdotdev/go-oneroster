@@ -10,8 +10,8 @@ This project aims to implement a OneRoster compliant RESTful API webserver in GO
 - ~~Output JSON~~
 - ~~Output correct json from single endpoint sample~~
 - ~~Implement RESTful parameters & operators~~
-- Implement logging
-- Implement error handling
+- ~~Implement logging~~
+- ~~Implement error handling~~
 - Implement security
 - Build endpoints
 - Sync DB
