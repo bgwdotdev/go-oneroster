@@ -21,11 +21,11 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 		t := "orgs"
 		q := r.URL.Query()
 		var p parameters.Parameters
-		p.SetLimit(q)
-		p.SetOffset(q)
-		err := p.SetSort(q, publicCols)
-		err = p.SetFields(q, publicCols)
-		err = p.SetFilters(q, publicCols)
+		ep, err := p.Resolve(q, publicCols)
+		if err != nil {
+			render.JSON(w, r, ep)
+			return
+		}
 		rows := data.QueryProperties(t, publicCols, p, db)
 		defer rows.Close()
 
@@ -47,9 +47,9 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 		// Wrap results in object
 		var output = struct {
 			// TODO: links (HTTP link header / HTTP Header: x-total-count
-			// TODO: []error
-			Orgs []map[string]interface{} `json:"orgs"`
-		}{orgs}
+			Errors []error                  `json:"statusInfoSet"`
+			Orgs   []map[string]interface{} `json:"orgs"`
+		}{ep, orgs}
 
 		// Output results
 		render.Status(r, http.StatusOK)

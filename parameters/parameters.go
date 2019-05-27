@@ -3,6 +3,7 @@ package parameters
 import (
 	"GoOneRoster/helpers"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"net/url"
 	"regexp"
 	"strings"
@@ -22,6 +23,31 @@ type filter struct {
 	Field     string
 	Predicate string
 	Value     string
+}
+
+func (p *Parameters) Resolve(q url.Values, col []string) ([]error, error) {
+	var ep []error
+	var err error
+	p.SetLimit(q)
+	p.SetOffset(q)
+	err = p.SetSort(q, col)
+	if err != nil {
+		ep = append(ep, err)
+	}
+	err = p.SetFields(q, col)
+	if err != nil {
+		ep = append(ep, err)
+	}
+	err = p.SetFilters(q, col)
+	if err != nil {
+		ep = append(ep, err)
+	}
+	for _, e := range ep {
+		if helpers.IsInvalid(e) {
+			return ep, e
+		}
+	}
+	return ep, nil
 }
 
 func (p *Parameters) SetSort(q url.Values, col []string) error {
@@ -65,7 +91,7 @@ func (p *Parameters) SetFields(q url.Values, col []string) error {
 		for _, f := range fs {
 			c, err := validateField(f, col)
 			if err != nil {
-				err.(*helpers.ErrorObject).CodeMinor = "invalid_select_field"
+				err.(*helpers.ErrorObject).CodeMinor = "invalid_selection_field"
 				err.(*helpers.ErrorObject).Populate()
 				return err
 			}
@@ -114,6 +140,7 @@ func validateField(s string, col []string) (string, error) {
 	}
 	if f == "" {
 		err := fmt.Sprintf("Unknown field: %v", s)
+		log.Info(err)
 		return "", &helpers.ErrorObject{Description: err}
 	}
 	return f, nil
