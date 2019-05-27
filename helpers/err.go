@@ -6,15 +6,27 @@ import (
 	"net/http"
 )
 
+type invalid interface {
+	Invalid() bool
+}
+
+func IsInvalid(e error) bool {
+	ie, ok := e.(invalid)
+	return ok && ie.Invalid()
+}
+
 type Error struct {
 	StatusCode  int    `json:"-"`
 	CodeMajor   string `json:"codeMajor"`
 	Severity    string `json:"severity"`
-	Description error  `json:"description"`
+	Description string `json:"description"`
 	CodeMinor   string `json:"codeMinor"`
+	IsInvalid   bool   `json:"-"`
 }
 
-func (e *Error) Error() string { return e.CodeMinor }
+func (e *Error) Error() string { return e.Description }
+
+func (e *Error) Invalid() bool { return e.IsInvalid }
 
 func (e *Error) Payload(w http.ResponseWriter, r *http.Request) {
 	e = validateCodeMinor(e)
@@ -24,8 +36,7 @@ func (e *Error) Payload(w http.ResponseWriter, r *http.Request) {
 }
 
 func validateCodeMinor(e *Error) *Error {
-	c := e.CodeMinor
-	switch c {
+	switch e.CodeMinor {
 	case "full success":
 		e.StatusCode = http.StatusOK
 		e.CodeMajor = "success"
@@ -55,5 +66,13 @@ func validateCodeMinor(e *Error) *Error {
 		e.CodeMajor = "failure"
 		e.Severity = "error"
 	}
+
+	switch e.CodeMajor {
+	case "failure":
+		e.IsInvalid == true
+	default:
+		e.IsInvalid == false
+	}
+
 	return e
 }
