@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"GoOneRoster/conf"
-	"GoOneRoster/handlers"
 	"database/sql"
+	"github.com/fffnite/go-oneroster/conf"
+	"github.com/fffnite/go-oneroster/handlers"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/jwtauth"
 	log "github.com/sirupsen/logrus"

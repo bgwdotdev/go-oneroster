@@ -1,9 +1,9 @@
 package main
 
 import (
-	"GoOneRoster/conf"
-	data "GoOneRoster/db"
-	"GoOneRoster/routes"
+	"github.com/fffnite/go-oneroster/conf"
+	data "github.com/fffnite/go-oneroster/db"
+	"github.com/fffnite/go-oneroster/routes"
 	"github.com/go-chi/chi"
 	_ "github.com/mattn/go-sqlite3"
 	"net/http"

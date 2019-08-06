@@ -1,8 +1,8 @@
 package parameters
 
 import (
-	"GoOneRoster/helpers"
 	"fmt"
+	"github.com/fffnite/go-oneroster/helpers"
 	log "github.com/sirupsen/logrus"
 	"net/url"
 	"regexp"

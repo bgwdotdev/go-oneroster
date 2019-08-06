@@ -1,10 +1,10 @@
 package db
 
 import (
-	"GoOneRoster/parameters"
 	"database/sql"
 	"fmt"
 	"github.com/Masterminds/squirrel"
+	"github.com/fffnite/go-oneroster/parameters"
 	_ "github.com/mattn/go-sqlite3"
 	"strconv"
 )
