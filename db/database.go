@@ -1,8 +1,8 @@
 package db
 
 import (
-	"GoOneRoster/conf"
 	"database/sql"
+	"github.com/fffnite/go-oneroster/conf"
 	_ "github.com/mattn/go-sqlite3"
 )
 
