@@ -7,7 +7,9 @@ CREATE TABLE IF NOT EXISTS "orgs" (
     "type" text,
     "identifier" text,
     "parentSourcedId" text,
-    CONTRAINT "FK_orgs_orgs_parentSourcedId" FOREIGN KEY ("parentSourcedId") REFERENCES "orgs" ("sourcedId")
+    CONTRAINT "FK_orgs_orgs_parentSourcedId" 
+        FOREIGN KEY ("parentSourcedId")
+        REFERENCES "orgs" ("sourcedId")
 );
 
 CREATE TABLE IF NOT EXISTS "academicSessions" (
@@ -21,7 +23,9 @@ CREATE TABLE IF NOT EXISTS "academicSessions" (
     "endDate" text,
     "parentSourcedId" text,
     "schoolYear" text,
-    CONSTRAINT "FK_academicSessions_academicSessions_parentSourcedId" FOREIGN KEY ("parentSourcedId") REFERENCES "academicSessions" ("sourcedId")
+    CONSTRAINT "FK_academicSessions_academicSessions_parentSourcedId" 
+        FOREIGN KEY ("parentSourcedId")
+        REFERENCES "academicSessions" ("sourcedId")
 );
 
 CREATE TABLE IF NOT EXISTS "courses" (
@@ -36,7 +40,88 @@ CREATE TABLE IF NOT EXISTS "courses" (
     "orgSourcedId" text,
     "subjects" text,
     "subjectCodes" text,
-    CONSTRAINT "FK_courses_academicSessions_schoolYearSourcedId" FOREIGN KEY ("schoolYearSourcedId") REFERENCES "academicSessions" ("sourcedId")
+    CONSTRAINT "FK_courses_academicSessions_schoolYearSourcedId" 
+        FOREIGN KEY ("schoolYearSourcedId") 
+        REFERENCES "academicSessions" ("sourcedId"),
+    CONSTRAINT "FK_courses_orgs_orgSourcedId" 
+        FOREIGN KEY ("orgSourcedId") 
+        REFERENCES "orgs" ("sourcedId")
 );
 
 CREATE TABLE IF NOT EXISTS "classes" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "sourcedId" text,
+    "status" text,
+    "dateLastModified" text,
+    "title" text,
+    "grades" text,
+    "courseSoucedId" text,
+    "classCode" text,
+    "classType" text,
+    "location" text,
+    "schoolSourcedId" text,
+    "termSourcedIds" text,
+    "subjects" text,
+    "subjectCodes" text,
+    "periods" text,
+    CONSTRAINT "FK_classes_courses_courseSourcedId"
+        FOREIGN KEY ("courseSourcedId")
+        REFERENCES "courses" ("courseSourcedId"),
+    CONSTRAINT "FK_classes_orgs_schoolSourcedId"
+        FOREIGN KEY ("schoolSourcedId")
+        REFERENCES "orgs" ("sourcedId"),
+    CONSTRAINT "FK_classes_academicSessions_termSourcedId"
+        FOREIGN KEY ("termSourcedId")
+        REFERENCES "academicSessions" ("sourcedId")
+);
+
+CREATE TABLE IF NOT EXISTS "users" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "sourcedId" text,
+    "status" text,
+    "dateLastModified" text,
+    "enabledUser" boolean,
+    "orgSourcedIds" text,
+    "role" text,
+    "username" text,
+    "userIds" text,
+    "givenName" text,
+    "familyName" text,
+    "middleName" text,
+    "identifier" text,
+    "email" text,
+    "sms" text,
+    "phone" text,
+    "agentSourcedIds" text,
+    "grades" text,
+    "password" text,
+    CONSTRAINT "FK_users_orgs_orgSourcedId"
+        FOREIGN KEY ("orgSourcedId")
+        REFERENCES "orgs" ("sourcedId"),
+    CONSTRAINT "FK_users_users_agentSourcedIds"
+        FOREIGN KEY ("agentSourcedId")
+        REFERENCES "users" ("sourcedId")
+);
+
+CREATE TABLE IF NOT EXISTS "enrollments" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "sourcedId" text,
+    "status" text,
+    "dateLastModified" text,
+    "classSourcedId" text,
+    "schoolSourcedId" text,
+    "userSourcedId" text,
+    "role" text,
+    "primary" text,
+    "beginDate" text,
+    "endDate" text,
+    CONSTRAINT "FK_enrollments_classes_classSourcedId"
+        FOREIGN KEY ("classSourcedId")
+        REFERENCES "classes" ("sourcedId"),
+    CONSTRAINT "FK_enrollments_orgs_schoolSourcedId"
+        FOREIGN KEY ("schoolSourcedId") 
+        REFERENCES "orgs" ("sourcedId"),
+    CONSTRAINT "FK_enrollments_users_userSourcedId"
+        FOREIGN KEY ("userSourcedId")
+        REFERENCES "users" ("sourcedId")
+);
