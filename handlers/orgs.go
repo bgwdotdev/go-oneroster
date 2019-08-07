@@ -44,12 +44,21 @@ func GetOrg(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Get object based off id from query
 		id := chi.URLParam(r, "id")
+        var p parameters.Parameters
+        api := apiRequest{
+            Table: "orgs",
+            Columns: publicCols,
+            Request: r,
+            DB: db,
+            Params: p,
+        }
+        /* 
 		statement := fmt.Sprintf("SELECT sourcedId, name FROM orgs WHERE sourcedId='%v'", id)
 
 		var org Org
 		db.QueryRow(statement).Scan(&org.SourcedId, &org.Name)
 		//org["children"] = data.QueryNestedProperty("orgs", "parentSourcedId", org["sourcedId"], db)
-
+        */
 		// Wrap result
 		var output = struct {
 			Org Org
