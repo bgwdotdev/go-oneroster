@@ -9,49 +9,32 @@ import (
 	"github.com/fffnite/go-oneroster/parameters"
 	"github.com/go-chi/chi"
 	_ "github.com/mattn/go-sqlite3"
-	log "github.com/sirupsen/logrus"
 	"net/http"
-	"strings"
 )
 
 // Queries database connection for Orgs
 func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Info(r)
-		t := "orgs"
-		q := r.URL.Query()
 		var p parameters.Parameters
-		ep, err := p.Resolve(q, publicCols)
+		api := apiRequest{
+			Table:   "orgs",
+			Columns: publicCols,
+			Request: r,
+			DB:      db,
+			Params:  p,
+		}
+		ep, err := api.Parse()
 		if err != nil {
 			render.JSON(w, r, ep)
 			return
 		}
-		rows := data.QueryProperties(t, publicCols, p, db)
+		rows := data.QueryProperties(api.Table, api.Columns, api.Params, api.DB)
 		defer rows.Close()
-
-		// Build results
-		var orgs []map[string]interface{}
-		for rows.Next() {
-			org := data.FormatResults(rows)
-			if strings.Contains(p.Fields, "parent") {
-				org["parent"] = data.QueryNestedProperty("orgs", "sourcedId", org["parentSourcedId"], db, r.URL)
-			}
-			delete(org, "parentSourcedId")
-			orgs = append(orgs, org)
-		}
-		err = rows.Err()
-		if err != nil {
-			panic(err)
-		}
-
-		// Wrap results in object
+		orgs := api.query(rows)
 		var output = struct {
-			// TODO: links (HTTP link header / HTTP Header: x-total-count
 			Errors []error                  `json:"statusInfoSet"`
 			Orgs   []map[string]interface{} `json:"orgs"`
 		}{ep, orgs}
-
-		// Output results
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, output)
 	}
