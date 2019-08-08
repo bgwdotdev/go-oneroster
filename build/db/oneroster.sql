@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS "orgs" (
     "type" text,
     "identifier" text,
     "parentSourcedId" text,
-    CONTRAINT "FK_orgs_orgs_parentSourcedId" 
+    CONSTRAINT "FK_orgs_orgs_parentSourcedId" 
         FOREIGN KEY ("parentSourcedId")
         REFERENCES "orgs" ("sourcedId")
 );
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS "classes" (
     "dateLastModified" text,
     "title" text,
     "grades" text,
-    "courseSoucedId" text,
+    "courseSourcedId" text,
     "classCode" text,
     "classType" text,
     "location" text,
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS "classes" (
         FOREIGN KEY ("schoolSourcedId")
         REFERENCES "orgs" ("sourcedId"),
     CONSTRAINT "FK_classes_academicSessions_termSourcedId"
-        FOREIGN KEY ("termSourcedId")
+        FOREIGN KEY ("termSourcedIds")
         REFERENCES "academicSessions" ("sourcedId")
 );
 
@@ -96,10 +96,10 @@ CREATE TABLE IF NOT EXISTS "users" (
     "grades" text,
     "password" text,
     CONSTRAINT "FK_users_orgs_orgSourcedId"
-        FOREIGN KEY ("orgSourcedId")
+        FOREIGN KEY ("orgSourcedIds")
         REFERENCES "orgs" ("sourcedId"),
     CONSTRAINT "FK_users_users_agentSourcedIds"
-        FOREIGN KEY ("agentSourcedId")
+        FOREIGN KEY ("agentSourcedIds")
         REFERENCES "users" ("sourcedId")
 );
 
