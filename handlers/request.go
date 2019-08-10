@@ -61,7 +61,9 @@ func (r *apiRequest) validateFk() {
 }
 */
 
-func (r *apiRequest) parse() ([]error, error) {
+// sets and validates query parameters
+// returns oneroster api error payload if invalid
+func (r *apiRequest) validateParams() ([]error, error) {
 	log.Info(r.Request)
 	errp, err := r.Params.Resolve((r.Request.R.URL.Query()), r.ORData.Columns)
 	if err != nil {
@@ -133,7 +135,7 @@ func GetAll(t string, c []string, db *sql.DB) http.HandlerFunc {
 */
 
 func (a *apiRequest) invoke() {
-	errP, err := a.parse()
+	errP, err := a.validateParams()
 	if err != nil {
 		render.JSON(a.Request.W, a.Request.R, errP)
 		return
