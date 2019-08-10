@@ -12,12 +12,17 @@ import (
 )
 
 type apiRequest struct {
-	Request *http.Request
+	Request Req
 	DB      *sql.DB
 	ORData  OneRoster
 	Params  parameters.Parameters
 	Ids     []ID
 	Fks     []FK
+}
+
+type Req struct {
+	W http.ResponseWriter
+	R *http.Request
 }
 
 type OneRoster struct {
@@ -34,11 +39,11 @@ type ID struct {
 
 type FK struct {
 	KeyColumn string
-	KeyValue  string
 	RefTable  string
 	RefColumn string
 }
 
+/*
 func (r *apiRequest) validateId() {
 	if r.Ids != nil {
 		for _, v := range r.Ids {
@@ -54,10 +59,11 @@ func (r *apiRequest) validateFk() {
 		}
 	}
 }
+*/
 
 func (r *apiRequest) parse() ([]error, error) {
 	log.Info(r.Request)
-	errp, err := r.Params.Resolve((r.Request.URL.Query()), r.Columns)
+	errp, err := r.Params.Resolve((r.Request.R.URL.Query()), r.ORData.Columns)
 	if err != nil {
 		return errp, err
 	}
@@ -69,8 +75,8 @@ func (r *apiRequest) query(rows *sql.Rows) []map[string]interface{} {
 	for rows.Next() {
 		result := data.FormatResults(rows)
 		if strings.Contains(r.Params.Fields, "parent") {
-			result["parent"] = data.QueryNestedProperty(r.Table, "sourcedId",
-				result["parentSourcedId"], r.DB, r.Request.URL)
+			result["parent"] = data.QueryNestedProperty(r.ORData.Table, "sourcedId",
+				result["parentSourcedId"], r.DB, r.Request.R.URL)
 		}
 		delete(result, "parentSourcedId")
 		results = append(results, result)
@@ -99,6 +105,7 @@ func (o output) MarshalJSON() ([]byte, error) {
 	return json.Marshal(data)
 }
 
+/*
 func GetAll(t string, c []string, db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var p parameters.Parameters
@@ -122,4 +129,20 @@ func GetAll(t string, c []string, db *sql.DB) http.HandlerFunc {
 		render.Status(r, http.StatusOK)
 		render.JSON(w, r, o)
 	}
+}
+*/
+
+func (a *apiRequest) invoke() {
+	errP, err := a.parse()
+	if err != nil {
+		render.JSON(a.Request.W, a.Request.R, errP)
+		return
+	}
+	rows := a.queryProperties()
+	defer rows.Close()
+	results := a.query(rows)
+	jResults = a.ORData.OutputName
+	o := output{errP, results}
+	render.Status(a.Request.R, http.StatusOK)
+	render.JSON(a.Request.W, a.Request.R, o)
 }

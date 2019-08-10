@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
-	data "github.com/fffnite/go-oneroster/db"
 	"github.com/fffnite/go-oneroster/parameters"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -14,28 +13,14 @@ import (
 // Queries database connection for Orgs
 func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var p parameters.Parameters
 		api := apiRequest{
-			Table:   "orgs",
-			Columns: publicCols,
-			Request: r,
+			Request: Req{w, r},
 			DB:      db,
-			Params:  p,
+			ORData:  OneRoster{Table: "orgs", Columns: publicCols},
+			Params:  parameters.Parameters{},
+			Fks:     []FK{FK{"parentSourcedId", "orgs", "sourcedId"}},
 		}
-		ep, err := api.parse()
-		if err != nil {
-			render.JSON(w, r, ep)
-			return
-		}
-		rows := data.QueryProperties(api.Table, api.Columns, api.Params, api.DB)
-		defer rows.Close()
-		orgs := api.query(rows)
-		var output = struct {
-			Errors []error                  `json:"statusInfoSet"`
-			Orgs   []map[string]interface{} `json:"orgs"`
-		}{ep, orgs}
-		render.Status(r, http.StatusOK)
-		render.JSON(w, r, output)
+		api.invoke()
 	}
 }
 
