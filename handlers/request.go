@@ -72,7 +72,9 @@ func (r *apiRequest) validateParams() ([]error, error) {
 	return errp, nil
 }
 
-func (r *apiRequest) query(rows *sql.Rows) []map[string]interface{} {
+// Formats sql query results and initiates
+// Forgein key sub queries
+func (r *apiRequest) buildResults(rows *sql.Rows) []map[string]interface{} {
 	var results []map[string]interface{}
 	for rows.Next() {
 		result := data.FormatResults(rows)
@@ -115,7 +117,7 @@ func (a *apiRequest) invoke() {
 	}
 	rows := a.queryProperties()
 	defer rows.Close()
-	results := a.query(rows)
+	results := a.buildResults(rows)
 	jResults = a.ORData.OutputName
 	o := output{errP, results}
 	render.Status(a.Request.R, http.StatusOK)
