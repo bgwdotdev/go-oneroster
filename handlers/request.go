@@ -53,6 +53,8 @@ func (r *apiRequest) validateId() {
 }
 */
 
+// Checks if struct contains foreign keys and if true
+// invokes db query for each, updating json key name
 func (r *apiRequest) validateFk(result map[string]interface{}) map[string]interface{} {
 	if r.Fks != nil {
 		for _, v := range r.Fks {

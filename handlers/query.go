@@ -54,6 +54,8 @@ func (a *apiRequest) queryProperties() *sql.Rows {
 	return rows
 }
 
+// Queries database for a tables foreign key object and
+// inserts as sub array into json results
 func (a *apiRequest) queryFk(fk FK, id interface{}) []map[string]interface{} {
 	rows, err := sq.
 		Select("sourcedId").
