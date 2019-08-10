@@ -3,7 +3,8 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
-	"github.com/Masterminds/squirrel"
+	sq "github.com/Masterminds/squirrel"
+	data "github.com/fffnite/go-oneroster/db"
 	_ "github.com/mattn/go-sqlite3"
 	"strconv"
 )
@@ -26,7 +27,7 @@ func (a *apiRequest) queryProperties() *sql.Rows {
 	}
 
 	// Create sql query
-	s, _, err := squirrel.
+	s, _, err := sq.
 		Select(a.Params.Fields).
 		From(a.ORData.Table).
 		Where(w).
@@ -51,4 +52,30 @@ func (a *apiRequest) queryProperties() *sql.Rows {
 	}
 
 	return rows
+}
+
+func (a *apiRequest) queryFk(fk FK, id interface{}) []map[string]interface{} {
+	rows, err := sq.
+		Select("sourcedId").
+		From(fk.RefTable).
+		Where(sq.Eq{fk.RefColumn: id}).
+		RunWith(a.DB).
+		Query()
+	if err != nil {
+		//TODO: placeholder
+		panic(err)
+	}
+	var rs []map[string]interface{}
+	for rows.Next() {
+		r := data.FormatResults(rows)
+		r["type"] = fk.RefTable
+		r["href"] = "/define/endpoint/here" //TODO: url endpoint
+		rs = append(rs, r)
+	}
+	err = rows.Err()
+	if err != nil {
+		//TODO: placeholder
+		panic(err)
+	}
+	return rs
 }
