@@ -107,33 +107,6 @@ func (o output) MarshalJSON() ([]byte, error) {
 	return json.Marshal(data)
 }
 
-/*
-func GetAll(t string, c []string, db *sql.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var p parameters.Parameters
-		api := apiRequest{
-			Table:   t,
-			Columns: c,
-			Request: r,
-			DB:      db,
-			Params:  p,
-		}
-		errP, err := api.parse()
-		if err != nil {
-			render.JSON(w, r, errP)
-			return
-		}
-		rows := data.QueryProperties(api.Table, api.Columns, api.Params, api.DB)
-		defer rows.Close()
-		results := api.query(rows)
-		jResults = t
-		o := output{errP, results}
-		render.Status(r, http.StatusOK)
-		render.JSON(w, r, o)
-	}
-}
-*/
-
 func (a *apiRequest) invoke() {
 	errP, err := a.validateParams()
 	if err != nil {
