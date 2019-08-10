@@ -12,11 +12,47 @@ import (
 )
 
 type apiRequest struct {
-	Table   string
-	Columns []string
 	Request *http.Request
 	DB      *sql.DB
+	ORData  OneRoster
 	Params  parameters.Parameters
+	Ids     []ID
+	Fks     []FK
+}
+
+type OneRoster struct {
+	Table      string
+	Columns    []string
+	ObjectType string
+	OutputName string
+}
+
+type ID struct {
+	SourcedId string
+	Column    string
+}
+
+type FK struct {
+	KeyColumn string
+	KeyValue  string
+	RefTable  string
+	RefColumn string
+}
+
+func (r *apiRequest) validateId() {
+	if r.Ids != nil {
+		for _, v := range r.Ids {
+			// do thing
+		}
+	}
+}
+
+func (r *apiRequest) validateFk() {
+	if r.Fks != nil {
+		for _, v := range r.Fks {
+			// do things
+		}
+	}
 }
 
 func (r *apiRequest) parse() ([]error, error) {
