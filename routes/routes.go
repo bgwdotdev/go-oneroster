@@ -22,9 +22,9 @@ func Routes(db *sql.DB) *chi.Mux {
 	r.Group(func(r chi.Router) {
 		r.Use(jwtauth.Verifier(tokenAuth))
 		r.Use(jwtauth.Authenticator)
-		r.Get("/orgs", handlers.GetAll("orgs", orgsCols, db))
+		r.Get("/orgs", handlers.GetAllOrgs(db))
 		r.Get("/orgs/{id}", handlers.GetOrg(db))
-		r.Get("/academicSessions", handlers.GetAll("academicSessions", asCols, db))
+		//r.Get("/academicSessions", handlers.GetAll("academicSessions", asCols, db))
 	})
 	return r
 }
