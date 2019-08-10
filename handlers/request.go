@@ -8,7 +8,6 @@ import (
 	"github.com/go-chi/render"
 	log "github.com/sirupsen/logrus"
 	"net/http"
-	"strings"
 )
 
 type apiRequest struct {
@@ -38,9 +37,10 @@ type ID struct {
 }
 
 type FK struct {
-	KeyColumn string
-	RefTable  string
-	RefColumn string
+	KeyColumn  string
+	RefTable   string
+	RefColumn  string
+	OutputName string
 }
 
 /*
@@ -51,15 +51,17 @@ func (r *apiRequest) validateId() {
 		}
 	}
 }
+*/
 
-func (r *apiRequest) validateFk() {
+func (r *apiRequest) validateFk(result map[string]interface{}) map[string]interface{} {
 	if r.Fks != nil {
 		for _, v := range r.Fks {
-			// do things
+			result[v.OutputName] = r.queryFk(v, result[v.KeyColumn])
+			delete(result, v.KeyColumn)
 		}
 	}
+	return result
 }
-*/
 
 // sets and validates query parameters
 // returns oneroster api error payload if invalid
@@ -78,12 +80,7 @@ func (r *apiRequest) buildResults(rows *sql.Rows) []map[string]interface{} {
 	var results []map[string]interface{}
 	for rows.Next() {
 		result := data.FormatResults(rows)
-		if strings.Contains(r.Params.Fields, "parent") {
-			result["parent"] = data.QueryNestedProperty(r.ORData.Table, "sourcedId",
-				result["parentSourcedId"], r.DB, r.Request.R.URL)
-		}
-		delete(result, "parentSourcedId")
-		results = append(results, result)
+		results = append(results, r.validateFk(result))
 	}
 	err := rows.Err()
 	if err != nil {
