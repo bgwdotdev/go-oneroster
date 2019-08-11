@@ -24,7 +24,11 @@ func Routes(db *sql.DB) *chi.Mux {
 		r.Use(jwtauth.Authenticator)
 		r.Get("/orgs", handlers.GetAllOrgs(db))
 		r.Get("/orgs/{id}", handlers.GetOrg(db))
-		//r.Get("/academicSessions", handlers.GetAll("academicSessions", asCols, db))
+		r.Get("/academicSessions", handlers.GetAllAcademicSessions(db))
+		r.Get("/courses", handlers.GetAllCourses(db))
+		r.Get("/classes", handlers.GetAllClasses(db))
+		r.Get("/users", handlers.GetAllUsers(db))
+		r.Get("/enrollments", handlers.GetAllEnrollments(db))
 	})
 	return r
 }
