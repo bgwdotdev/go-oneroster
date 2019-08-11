@@ -24,6 +24,27 @@ func Routes(db *sql.DB) *chi.Mux {
 		r.Use(jwtauth.Authenticator)
 		r.Get("/orgs", handlers.GetAllOrgs(db))
 		r.Get("/orgs/{id}", handlers.GetOrg(db))
+		//r.Get("/academicSessions", handlers.GetAll("academicSessions", asCols, db))
 	})
 	return r
+}
+
+var orgsCols = []string{"sourcedId",
+	"status",
+	"dateLastModified",
+	"name",
+	"type",
+	"identifier",
+	"parentSourcedId",
+}
+
+var asCols = []string{"sourcedId",
+	"status",
+	"dateLastModified",
+	"title",
+	"type",
+	"startDate",
+	"endDate",
+	"parentSourcedId",
+	"schoolYear",
 }

@@ -2,58 +2,25 @@ package handlers
 
 import (
 	"database/sql"
-	"github.com/go-chi/render"
-	// "github.com/google/uuid"
 	"fmt"
-	data "github.com/fffnite/go-oneroster/db"
 	"github.com/fffnite/go-oneroster/parameters"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/render"
 	_ "github.com/mattn/go-sqlite3"
-	log "github.com/sirupsen/logrus"
 	"net/http"
-	"strings"
 )
 
 // Queries database connection for Orgs
 func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Info(r)
-		t := "orgs"
-		q := r.URL.Query()
-		var p parameters.Parameters
-		ep, err := p.Resolve(q, publicCols)
-		if err != nil {
-			render.JSON(w, r, ep)
-			return
+		api := apiRequest{
+			Request: Req{w, r},
+			DB:      db,
+			ORData:  OneRoster{Table: "orgs", Columns: publicCols, OutputName: "orgs"},
+			Params:  parameters.Parameters{},
+			Fks:     []FK{FK{"parentSourcedId", "orgs", "sourcedId", "parent"}},
 		}
-		rows := data.QueryProperties(t, publicCols, p, db)
-		defer rows.Close()
-
-		// Build results
-		var orgs []map[string]interface{}
-		for rows.Next() {
-			org := data.FormatResults(rows)
-			if strings.Contains(p.Fields, "parent") {
-				org["parent"] = data.QueryNestedProperty("orgs", "sourcedId", org["parentSourcedId"], db, r.URL)
-			}
-			delete(org, "parentSourcedId")
-			orgs = append(orgs, org)
-		}
-		err = rows.Err()
-		if err != nil {
-			panic(err)
-		}
-
-		// Wrap results in object
-		var output = struct {
-			// TODO: links (HTTP link header / HTTP Header: x-total-count
-			Errors []error                  `json:"statusInfoSet"`
-			Orgs   []map[string]interface{} `json:"orgs"`
-		}{ep, orgs}
-
-		// Output results
-		render.Status(r, http.StatusOK)
-		render.JSON(w, r, output)
+		api.invoke()
 	}
 }
 
@@ -61,12 +28,21 @@ func GetOrg(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Get object based off id from query
 		id := chi.URLParam(r, "id")
+		//var p parameters.Parameters
+		/*
+			api := apiRequest{
+				Table:   "orgs",
+				Columns: publicCols,
+				Request: r,
+				DB:      db,
+				Params:  p,
+			}
+		*/
 		statement := fmt.Sprintf("SELECT sourcedId, name FROM orgs WHERE sourcedId='%v'", id)
 
 		var org Org
 		db.QueryRow(statement).Scan(&org.SourcedId, &org.Name)
 		//org["children"] = data.QueryNestedProperty("orgs", "parentSourcedId", org["sourcedId"], db)
-
 		// Wrap result
 		var output = struct {
 			Org Org
