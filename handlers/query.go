@@ -12,7 +12,7 @@ import (
 // Queries the database based off endpoint
 func (a *apiRequest) queryProperties() *sql.Rows {
 	// Build Dynamic where query
-	w := fmt.Sprintf("%v%v? %v %v%v?",
+	w := fmt.Sprintf("(%v%v? %v %v%v?)",
 		a.Params.Filter1.Field, a.Params.Filter1.Predicate,
 		a.Params.LogicalOperator,
 		a.Params.Filter2.Field, a.Params.Filter2.Predicate)
@@ -27,30 +27,18 @@ func (a *apiRequest) queryProperties() *sql.Rows {
 	}
 
 	// Create sql query
-	s, _, err := sq.
+	rows, err := sq.
 		Select(a.Params.Fields).
 		From(a.ORData.Table).
-		Where(w).
+		Where(w, a.Params.Filter1.Value, a.Params.Filter2.Value).
 		OrderBy(a.Params.Sort).
 		Limit(limit).
 		Offset(offset).
-		ToSql()
+		RunWith(a.DB).
+		Query()
 	if err != nil {
 		panic(err)
 	}
-
-	// execute query
-	stmt, err := a.DB.Prepare(s)
-	if err != nil {
-		panic(err)
-	}
-	defer stmt.Close()
-
-	rows, err := stmt.Query(a.Params.Filter1.Value, a.Params.Filter2.Value)
-	if err != nil {
-		panic(err)
-	}
-
 	return rows
 }
 
