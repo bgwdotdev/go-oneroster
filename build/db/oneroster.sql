@@ -150,6 +150,16 @@ CREATE TABLE IF NOT EXISTS "userOrgs" (
         REFERENCES "users" ("sourcedId")
 );
 
+CREATE TABLE IF NOT EXISTS "userIds" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "userSourcedId" text,
+    "type" text,
+    "identifier" text,
+    CONSTRAINT "FK_userIds_users_userSourcedId"
+        FOREIGN KEY ("userSourcedId")
+        REFERENCES "users" ("sourcedId")
+);
+
 CREATE TABLE IF NOT EXISTS "classAcademicSessions" (
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "academicSessionSourcedId" text,
@@ -161,3 +171,4 @@ CREATE TABLE IF NOT EXISTS "classAcademicSessions" (
         FOREIGN KEY ("classSourcedId")
         REFERENCES "classes" ("sourcedId")
 );
+
