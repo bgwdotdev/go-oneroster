@@ -125,3 +125,39 @@ CREATE TABLE IF NOT EXISTS "enrollments" (
         FOREIGN KEY ("userSourcedId")
         REFERENCES "users" ("sourcedId")
 );
+
+CREATE TABLE IF NOT EXISTS "userAgents" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "agentSourcedId" text,
+    "userSourcedId" text,
+    CONSTRAINT "FK_userAgents_users_agentSourcedId" 
+        FOREIGN KEY ("agentSourcedId")
+        REFERENCES "users" ("sourcedId"),
+    CONSTRAINT "FK_userAgents_users_subjectSourcedId"
+        FOREIGN KEY ("userSourcedId")
+        REFERENCES "users" ("sourcedId")
+);
+
+CREATE TABLE IF NOT EXISTS "userOrgs" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "orgSourcedId" text,
+    "userSourcedId" text,
+    CONSTRAINT "FK_userOrgs_orgs_orgSourcedId"
+        FOREIGN KEY ("orgSourcedId")
+        REFERENCES "orgs" ("sourcedId"),
+    CONSTRAINT "FK_userOrgs_users_userSourcedId"
+        FOREIGN KEY ("userSourcedId")
+        REFERENCES "users" ("sourcedId")
+);
+
+CREATE TABLE IF NOT EXISTS "classAcademicSessions" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "academicSessionSourcedId" text,
+    "classSourcedId" text,
+    CONSTRAINT "FK_classAcademicSessions_academicSessions_academicSessionSourcedId"
+        FOREIGN KEY ("academicSessionSourcedId")
+        REFERENCES "academicSessions" ("sourcedId"),
+    CONSTRAINT "FK_classAcademicSessions_classes_classSourcedId"
+        FOREIGN KEY ("classSourcedId")
+        REFERENCES "classes" ("sourcedId")
+);
