@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS "classes" (
     "periods" text,
     CONSTRAINT "FK_classes_courses_courseSourcedId"
         FOREIGN KEY ("courseSourcedId")
-        REFERENCES "courses" ("surcedId"),
+        REFERENCES "courses" ("sourcedId"),
     CONSTRAINT "FK_classes_orgs_schoolSourcedId"
         FOREIGN KEY ("schoolSourcedId")
         REFERENCES "orgs" ("sourcedId"),
