@@ -306,4 +306,43 @@ FROM
         ON org.CODE = SS.SCHOOL
 WHERE
     SS.ACADEMIC_YEAR = '2019'
+ORDER BY
+    sourcedId
 
+/** userOrgs - Pupil **/
+SELECT
+    P.NAME_ID AS userSourcedId,
+    org.SCHOOL_ID AS orgSourcedId,
+FROM
+    dbo.PUPIL AS P
+        INNER JOIN
+    dbo.SCHOOL AS org
+        ON org.CODE = P.SCHOOL
+WHERE
+    P.ACADEMIC_YEAR = '2019'
+ORDER BY
+    orgSourcedId, userSourcedId
+/** userOrgs - staff **/
+SELECT 
+    S.NAME_ID AS userSourcedId,
+    org.SCHOOL_ID AS orgSourcedId,
+FROM
+    dbo.STAFF AS S
+        INNER JOIN
+    dbo.SCHOOL AS org
+ORDER BY
+    orgSourcedId, userSourcedId
+
+/** classAcademicSessions **/
+SELECT
+    SS.SUBJECT_SET_ID AS classSourcedId,
+    Y.YEAR_ID AS academicSessionSourcedId
+FROM
+    dbo.SUBJECT_SET AS SS
+        INNER JOIN
+    dbo.YEAR AS Y
+        ON Y.CODE = SS.ACADEMIC_YEAR
+WHERE
+    SS.ACADEMIC_YEAR = '2019'
+ORDER BY
+    academicSessionSourcedId, classSourcedId
