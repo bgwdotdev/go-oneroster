@@ -9,7 +9,7 @@ SELECT
 FROM 
     dbo.SCHOOL
 ORDER BY
-    SCHOOL_ID
+    sourcedId
 
 /** academicSession - academic Years **/
 SELECT
@@ -24,7 +24,7 @@ FROM
     dbo.YEAR AS Y INNER JOIN
     dbo.SCHOOL_CALENDAR AS SC ON SC.ACADEMIC_YEAR = Y.CODE
 ORDER BY 
-    Y.YEAR_ID
+    sourcedId
 /** academicSession - terms **/
 
 /** courses **/
@@ -45,7 +45,7 @@ FROM
     dbo.SCHOOL AS org
         ON org.CODE = S.SCHOOL
 ORDER BY
-    S.SUBJECT_ID
+    sourcedId
 
 /** classes - scheduled **/ 
 SELECT
@@ -75,7 +75,7 @@ FROM
     dbo.SUBJECT AS SUB
         ON SUB.CODE = S.SUBJECT
 ORDER BY
-    S.SUBJECT_SET_ID    
+    sourcedId
 /** classes - homeroom(form) **/
 SELECT
     F.FORM_ID AS sourcedId,
@@ -100,7 +100,7 @@ FROM
 WHERE
     F.ACADEMIC_YEAR = '2019'
 ORDER BY
-    F.FORM_ID
+    sourcedId
 
 /** users - pupils **/
 SELECT
@@ -138,7 +138,7 @@ WHERE
     AND
     form.ACADEMC_YEAR = '2019'
 ORDER BY
-    P.NAME_ID
+    sourcedId
 /** users - staff **/
 SELECT 
     U.NAME_ID AS sourcedId,
@@ -170,7 +170,7 @@ WHERE
     OR
     U.CATEGORY = 'EARLY'
 ORDER BY
-    U.NAME_ID
+    sourcedId
 /** users - support staff **/
 SELECT 
     U.NAME_ID AS sourcedId,
@@ -200,7 +200,7 @@ WHERE
     OR
     U.CATEGORY = 'COACH'
 ORDER BY
-    U.NAME_ID
+    sourcedId
 
 /** enrollments - pupils **/
 SELECT
@@ -228,7 +228,7 @@ FROM
 WHERE
     SS.ACADEMIC_YEAR = '2019'
 ORDER BY
-    P.PUPIL_SET_ID
+    sourcedId
 /** enrollments - Teacher 1 **/
 DECLARE @T bit
 SET @T=1
@@ -253,6 +253,8 @@ FROM
         ON org.CODE = SS.SCHOOL
 WHERE
     SS.ACADEMIC_YEAR = '2019'
+ORDER BY
+    sourcedId
 /** enrollments - Teacher 2 **/
 DECLARE @F bit
 SET @F=0
@@ -277,6 +279,9 @@ FROM
         ON org.CODE = SS.SCHOOL
 WHERE
     SS.ACADEMIC_YEAR = '2019'
+ORDER BY
+    sourcedId
+
 /** enrollments - Teacher 3 **/
 DECLARE @F bit
 SET @F=0
