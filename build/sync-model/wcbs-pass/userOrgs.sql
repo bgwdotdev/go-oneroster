@@ -1,7 +1,7 @@
 /** userOrgs - Pupil **/
 SELECT
     P.NAME_ID AS userSourcedId,
-    org.SCHOOL_ID AS orgSourcedId,
+    org.SCHOOL_ID AS orgSourcedId
 FROM
     dbo.PUPIL AS P
         INNER JOIN
@@ -14,11 +14,12 @@ ORDER BY
 /** userOrgs - staff **/
 SELECT 
     S.NAME_ID AS userSourcedId,
-    org.SCHOOL_ID AS orgSourcedId,
+    org.SCHOOL_ID AS orgSourcedId
 FROM
     dbo.STAFF AS S
         INNER JOIN
     dbo.SCHOOL AS org
+        ON org.CODE = S.SCHOOL
 ORDER BY
     orgSourcedId, userSourcedId
 

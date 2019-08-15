@@ -3,7 +3,7 @@ SELECT
     P.NAME_ID AS sourcedId,
     P.IN_USE AS status,
     P.LAST_AMEND_DATE as dateLastModified,
-    P.IN_USE AS enalbedUser,
+    P.IN_USE AS enabledUser,
     P.NAME_ID AS orgSourcedIds,
     'student' AS role,
     N.EMAIL_ADDRESS AS username,
@@ -32,7 +32,7 @@ FROM
 WHERE 
     P.ACADEMIC_YEAR = '2019'
     AND
-    form.ACADEMC_YEAR = '2019'
+    form.ACADEMIC_YEAR = '2019'
 ORDER BY
     sourcedId
 /** users - staff **/

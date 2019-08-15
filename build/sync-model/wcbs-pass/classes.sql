@@ -5,7 +5,7 @@ SELECT
     S.LAST_AMEND_DATE AS dateLastModified,
     S.DESCRIPTION AS title,
     /* null AS grades, */
-    SUB.SUBJECT_ID AS courseSoucedId,
+    SUB.SUBJECT_ID AS courseSourcedId,
     S.SET_CODE AS classCode,
     'scheduled' AS classType,
     S.ROOM AS location,

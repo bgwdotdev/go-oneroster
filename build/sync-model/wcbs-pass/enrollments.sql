@@ -79,8 +79,6 @@ ORDER BY
     sourcedId
 
 /** enrollments - Teacher 3 **/
-DECLARE @F bit
-SET @F=0
 SELECT
     CONCAT(SS.SUBJECT_SET_ID, S.NAME_ID) AS sourcedId,
     SS.IN_USE AS status,
