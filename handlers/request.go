@@ -40,6 +40,7 @@ type FK struct {
 	KeyColumn  string
 	RefTable   string
 	RefColumn  string
+    RefSelect  string
 	OutputName string
 }
 
