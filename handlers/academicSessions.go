@@ -18,7 +18,7 @@ func GetAllAcademicSessions(db *sql.DB) http.HandlerFunc {
 				OutputName: "academicSessions",
 			},
 			Params: parameters.Parameters{},
-			Fks:    []FK{FK{"parentSourcedId", "academicSessions", "sourcedId", "parent"}},
+			Fks:    []FK{FK{"parentSourcedId", "academicSessions", "sourcedId", "sourcedId", "parent"}},
 		}
 		api.invoke()
 	}

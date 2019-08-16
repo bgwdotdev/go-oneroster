@@ -19,9 +19,9 @@ func GetAllClasses(db *sql.DB) http.HandlerFunc {
 			},
 			Params: parameters.Parameters{},
 			Fks: []FK{
-				FK{"courseSourcedId", "courses", "sourcedId", "course"},
-				FK{"termSourcedIds", "classAcademicSessions", "sourcedId", "terms"},
-				FK{"schoolSourcedId", "orgs", "sourcedId", "school"},
+				FK{"courseSourcedId", "courses", "sourcedId", "sourcedId", "course"},
+                FK{"termSourcedIds", "classAcademicSessions", "academicSessionSourcedId", "classSourcedId", "terms"},
+				FK{"schoolSourcedId", "orgs", "sourcedId", "sourcedId", "school"},
 			},
 		}
 		api.invoke()

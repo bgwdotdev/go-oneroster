@@ -18,7 +18,7 @@ func GetAllOrgs(db *sql.DB) http.HandlerFunc {
 			DB:      db,
 			ORData:  OneRoster{Table: "orgs", Columns: publicCols, OutputName: "orgs"},
 			Params:  parameters.Parameters{},
-			Fks:     []FK{FK{"parentSourcedId", "orgs", "sourcedId", "parent"}},
+			Fks:     []FK{FK{"parentSourcedId", "orgs", "sourcedId", "sourcedId", "parent"}},
 		}
 		api.invoke()
 	}

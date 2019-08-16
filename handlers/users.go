@@ -19,8 +19,8 @@ func GetAllUsers(db *sql.DB) http.HandlerFunc {
 			},
 			Params: parameters.Parameters{},
 			Fks: []FK{
-				FK{"agentSourcedIds", "userAgents", "sourcedId", "agents"},
-				FK{"orgSourcedIds", "userOrgs", "sourcedId", "orgs"},
+				FK{"agentSourcedIds", "userAgents", "userSourcedId", "agentSourcedId", "agents"},
+				FK{"orgSourcedIds", "userOrgs", "userSourcedId", "orgSourcedId", "orgs"},
 			},
 		}
 		api.invoke()

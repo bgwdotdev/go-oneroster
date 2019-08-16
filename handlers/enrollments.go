@@ -19,9 +19,9 @@ func GetAllEnrollments(db *sql.DB) http.HandlerFunc {
 			},
 			Params: parameters.Parameters{},
 			Fks: []FK{
-				FK{"classSourcedId", "classes", "sourcedId", "class"},
-				FK{"schoolSourcedId", "orgs", "sourcedId", "school"},
-				FK{"userSourcedId", "users", "sourcedId", "user"},
+				FK{"classSourcedId", "classes", "sourcedId", "sourcedId", "class"},
+				FK{"schoolSourcedId", "orgs", "sourcedId", "sourcedId", "school"},
+				FK{"userSourcedId", "users", "sourcedId", "sourcedId", "user"},
 			},
 		}
 		api.invoke()
@@ -36,7 +36,7 @@ var enrollmentsCols = []string{
 	"schoolSourcedId",
 	"userSourcedId",
 	"role",
-	"primary",
+	"'primary'",
 	"beginDate",
 	"endDate",
 }
