@@ -46,7 +46,7 @@ func (a *apiRequest) queryProperties() *sql.Rows {
 // inserts as sub array into json results
 func (a *apiRequest) queryFk(fk FK, id interface{}) []map[string]interface{} {
 	rows, err := sq.
-		Select("sourcedId").
+		Select(fk.RefSelect + " AS sourcedId").
 		From(fk.RefTable).
 		Where(sq.Eq{fk.RefColumn: id}).
 		RunWith(a.DB).
