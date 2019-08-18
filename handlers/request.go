@@ -117,6 +117,7 @@ func (a *apiRequest) invoke() {
 	rows := a.queryProperties()
 	defer rows.Close()
 	results := a.buildResults(rows)
+	a.queryTotalCount()
 	jResults = a.ORData.OutputName
 	o := output{errP, results}
 	render.Status(a.Request.R, http.StatusOK)

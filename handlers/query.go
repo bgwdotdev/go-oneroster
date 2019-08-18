@@ -69,3 +69,26 @@ func (a *apiRequest) queryFk(fk FK, id interface{}) []map[string]interface{} {
 	}
 	return rs
 }
+
+func (a *apiRequest) queryTotalCount() {
+	rows, err := sq.
+		Select("Count()").
+		From(a.ORData.Table).
+		RunWith(a.DB).
+		Query()
+	if err != nil {
+		// TODO: handle error
+		panic(err)
+	}
+	for rows.Next() {
+		var count string
+		rows.Scan(&count)
+		a.Request.W.Header().Set("X-Total-Count", count)
+	}
+	defer rows.Close()
+	err = rows.Err()
+	if err != nil {
+		// TODO: handle error
+		panic(err)
+	}
+}
