@@ -40,7 +40,7 @@ type FK struct {
 	KeyColumn  string
 	RefTable   string
 	RefColumn  string
-    RefSelect  string
+	RefSelect  string
 	OutputName string
 }
 
@@ -69,7 +69,6 @@ func (r *apiRequest) validateFk(result map[string]interface{}) map[string]interf
 // sets and validates query parameters
 // returns oneroster api error payload if invalid
 func (r *apiRequest) validateParams() ([]error, error) {
-	log.Info(r.Request)
 	errp, err := r.Params.Resolve((r.Request.R.URL.Query()), r.ORData.Columns)
 	if err != nil {
 		return errp, err
