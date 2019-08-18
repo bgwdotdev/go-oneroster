@@ -92,3 +92,32 @@ func (a *apiRequest) queryTotalCount() {
 		panic(err)
 	}
 }
+
+func (a *apiRequest) queryLinkHeaders() {
+	url := a.Request.R.URL
+	limit := url.Query().Get("limit")
+	offset := url.Query().Get("offset")
+	if limit == "" {
+		limit = "100"
+	}
+	if offset == "" {
+		offset = "0"
+	}
+	ilimit, err := strconv.ParseUint(limit, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	ioffset, err := strconv.ParseUint(offset, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	nextOffset := ioffset + ilimit
+	var prevOffset uint64
+	if ioffset > ilimit {
+		prevOffset = ioffset - ilimit
+	}
+	u := url.Scheme + url.Host + url.Path
+	nlink := fmt.Sprintf("<%v?limit=%v&offset=%v>; rel=\"next\",\n", u, limit, nextOffset)
+	plink := fmt.Sprintf("<%v?limit=%v&offset=%v>; rel=\"next\",\n", u, limit, prevOffset)
+	a.Request.W.Header().Set("Link", nlink+plink)
+}
