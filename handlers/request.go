@@ -117,10 +117,15 @@ func (a *apiRequest) invoke() {
 	rows := a.queryProperties()
 	defer rows.Close()
 	results := a.buildResults(rows)
-	a.queryTotalCount()
-	a.queryLinkHeaders()
+    a.setHeaders()
 	jResults = a.ORData.OutputName
 	o := output{errP, results}
 	render.Status(a.Request.R, http.StatusOK)
 	render.JSON(a.Request.W, a.Request.R, o)
+}
+
+func (a *apiRequest) setHeaders() {
+    h := a.Request.W
+    h.Header().Set("X-Total-Count", a.queryTotalCount())
+    h.Header().Set("Link", a.queryLinkHeaders())
 }

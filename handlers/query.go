@@ -70,7 +70,8 @@ func (a *apiRequest) queryFk(fk FK, id interface{}) []map[string]interface{} {
 	return rs
 }
 
-func (a *apiRequest) queryTotalCount() {
+func (a *apiRequest) queryTotalCount() string {
+    var count string
 	rows, err := sq.
 		Select("Count()").
 		From(a.ORData.Table).
@@ -81,9 +82,7 @@ func (a *apiRequest) queryTotalCount() {
 		panic(err)
 	}
 	for rows.Next() {
-		var count string
 		rows.Scan(&count)
-		a.Request.W.Header().Set("X-Total-Count", count)
 	}
 	defer rows.Close()
 	err = rows.Err()
@@ -91,9 +90,10 @@ func (a *apiRequest) queryTotalCount() {
 		// TODO: handle error
 		panic(err)
 	}
+    return count
 }
 
-func (a *apiRequest) queryLinkHeaders() {
+func (a *apiRequest) queryLinkHeaders() string {
 	url := a.Request.R.URL
 	limit := url.Query().Get("limit")
 	offset := url.Query().Get("offset")
@@ -118,6 +118,6 @@ func (a *apiRequest) queryLinkHeaders() {
 	}
 	u := url.Scheme + url.Host + url.Path
 	nlink := fmt.Sprintf("<%v?limit=%v&offset=%v>; rel=\"next\",\n", u, limit, nextOffset)
-	plink := fmt.Sprintf("<%v?limit=%v&offset=%v>; rel=\"next\",\n", u, limit, prevOffset)
-	a.Request.W.Header().Set("Link", nlink+plink)
+	plink := fmt.Sprintf("<%v?limit=%v&offset=%v>; rel=\"prev\",\n", u, limit, prevOffset)
+	return nlink+plink
 }
