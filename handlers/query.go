@@ -93,8 +93,12 @@ func (a *apiRequest) queryTotalCount() string {
     return count
 }
 
-func (a *apiRequest) queryLinkHeaders() string {
+// Defines the next and previous limit/offsets for the api request
+// based off current and max
+func (a *apiRequest) queryLinkHeaders(count string) string {
+    var link string
 	url := a.Request.R.URL
+	u := url.Scheme + url.Host + url.Path
 	limit := url.Query().Get("limit")
 	offset := url.Query().Get("offset")
 	if limit == "" {
@@ -103,6 +107,7 @@ func (a *apiRequest) queryLinkHeaders() string {
 	if offset == "" {
 		offset = "0"
 	}
+
 	ilimit, err := strconv.ParseUint(limit, 10, 64)
 	if err != nil {
 		panic(err)
@@ -111,13 +116,30 @@ func (a *apiRequest) queryLinkHeaders() string {
 	if err != nil {
 		panic(err)
 	}
-	nextOffset := ioffset + ilimit
+	icount, err := strconv.ParseUint(count, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+    nextLimit := ilimit
+    if icount < ioffset + ilimit {
+        nextLimit = icount - ioffset
+    }
+	nextOffset := ioffset + nextLimit
+    if ioffset != icount {
+        link = link + fmt.Sprintf("<%v?limit=%v&offset=%v>; rel=\"next\",\n", u, nextLimit, nextOffset)
+    }
+
 	var prevOffset uint64
 	if ioffset > ilimit {
 		prevOffset = ioffset - ilimit
 	}
-	u := url.Scheme + url.Host + url.Path
-	nlink := fmt.Sprintf("<%v?limit=%v&offset=%v>; rel=\"next\",\n", u, limit, nextOffset)
-	plink := fmt.Sprintf("<%v?limit=%v&offset=%v>; rel=\"prev\",\n", u, limit, prevOffset)
-	return nlink+plink
+    prevLimit := ilimit
+    if int(ioffset) - int(ilimit) <= 0 {
+        prevLimit = ioffset
+    }
+    if ioffset != 0 {
+        link = link + fmt.Sprintf("<%v?limit=%v&offset=%v>; rel=\"prev\",\n", u, prevLimit, prevOffset)
+    }
+	return link
 }

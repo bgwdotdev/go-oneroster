@@ -126,6 +126,7 @@ func (a *apiRequest) invoke() {
 
 func (a *apiRequest) setHeaders() {
     h := a.Request.W
-    h.Header().Set("X-Total-Count", a.queryTotalCount())
-    h.Header().Set("Link", a.queryLinkHeaders())
+    count := a.queryTotalCount()
+    h.Header().Set("X-Total-Count", count)
+    h.Header().Set("Link", a.queryLinkHeaders(count))
 }
