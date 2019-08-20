@@ -6,6 +6,7 @@ import (
 	sq "github.com/Masterminds/squirrel"
 	data "github.com/fffnite/go-oneroster/db"
 	_ "github.com/mattn/go-sqlite3"
+	"net/url"
 	"strconv"
 )
 
@@ -102,9 +103,10 @@ func (a *apiRequest) queryTotalCount() string {
 // Defines the next and previous limit/offsets for the api request
 // based off current and max
 func (a *apiRequest) queryLinkHeaders(count string) string {
-    var link string
+	var link string
 	url := a.Request.R.URL
 	u := url.Scheme + url.Host + url.Path
+	p := buildLinkHeaderParams(url)
 	limit := url.Query().Get("limit")
 	offset := url.Query().Get("offset")
 	if limit == "" {
@@ -127,25 +129,44 @@ func (a *apiRequest) queryLinkHeaders(count string) string {
 		panic(err)
 	}
 
-    nextLimit := ilimit
-    if icount < ioffset + ilimit {
-        nextLimit = icount - ioffset
-    }
+	nextLimit := ilimit
+	if icount < ioffset+ilimit {
+		nextLimit = icount - ioffset
+	}
 	nextOffset := ioffset + nextLimit
-    if ioffset != icount {
-        link = link + fmt.Sprintf("<%v?limit=%v&offset=%v>; rel=\"next\",\n", u, nextLimit, nextOffset)
-    }
+	if ioffset != icount {
+		link = link + fmt.Sprintf("<%v?limit=%v&offset=%v%v>; rel=\"next\",\n", u, nextLimit, nextOffset, p)
+	}
 
 	var prevOffset uint64
 	if ioffset > ilimit {
 		prevOffset = ioffset - ilimit
 	}
-    prevLimit := ilimit
-    if int(ioffset) - int(ilimit) <= 0 {
-        prevLimit = ioffset
-    }
-    if ioffset != 0 {
-        link = link + fmt.Sprintf("<%v?limit=%v&offset=%v>; rel=\"prev\",\n", u, prevLimit, prevOffset)
-    }
+	prevLimit := ilimit
+	if int(ioffset)-int(ilimit) <= 0 {
+		prevLimit = ioffset
+	}
+	if ioffset != 0 {
+		link = link + fmt.Sprintf("<%v?limit=%v&offset=%v%v>; rel=\"prev\",\n", u, prevLimit, prevOffset, p)
+	}
 	return link
+}
+
+// hacky string append function to rebuild
+// original request params for link header
+func buildLinkHeaderParams(url *url.URL) string {
+	var s string
+	filter := url.Query().Get("filter")
+	if filter != "" {
+		s = s + "&filter=" + filter
+	}
+	fields := url.Query().Get("fields")
+	if fields != "" {
+		s = s + "&fields=" + fields
+	}
+	sort := url.Query().Get("sort")
+	if sort != "" {
+		s = s + "&sort=" + sort
+	}
+	return s
 }
