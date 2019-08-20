@@ -9,13 +9,17 @@ import (
 	"strconv"
 )
 
-// Queries the database based off endpoint
-func (a *apiRequest) queryProperties() *sql.Rows {
-	// Build Dynamic where query
-	w := fmt.Sprintf("(%v%v? %v %v%v?)",
+// Build Dynamic where query
+func (a *apiRequest) buildWhere() string {
+	return fmt.Sprintf("(%v%v? %v %v%v?)",
 		a.Params.Filter1.Field, a.Params.Filter1.Predicate,
 		a.Params.LogicalOperator,
 		a.Params.Filter2.Field, a.Params.Filter2.Predicate)
+}
+
+// Queries the database based off endpoint
+func (a *apiRequest) queryProperties() *sql.Rows {
+	w := a.buildWhere()
 	// Convert string to uint64
 	limit, err := strconv.ParseUint(a.Params.Limit, 10, 64)
 	if err != nil {
@@ -71,10 +75,12 @@ func (a *apiRequest) queryFk(fk FK, id interface{}) []map[string]interface{} {
 }
 
 func (a *apiRequest) queryTotalCount() string {
-    var count string
+	var count string
+	w := a.buildWhere()
 	rows, err := sq.
 		Select("Count()").
 		From(a.ORData.Table).
+		Where(w, a.Params.Filter1.Value, a.Params.Filter2.Value).
 		RunWith(a.DB).
 		Query()
 	if err != nil {
@@ -90,7 +96,7 @@ func (a *apiRequest) queryTotalCount() string {
 		// TODO: handle error
 		panic(err)
 	}
-    return count
+	return count
 }
 
 // Defines the next and previous limit/offsets for the api request
