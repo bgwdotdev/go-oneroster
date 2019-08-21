@@ -8,7 +8,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"net/url"
 	"strconv"
-    "strings"
+	"strings"
 )
 
 // Build Dynamic where query
@@ -134,7 +134,7 @@ func (a *apiRequest) queryLinkHeaders(count string) string {
 		nextLimit = icount - ioffset
 	}
 	nextOffset := ioffset + nextLimit
-	if ioffset != icount {
+	if nextOffset != icount {
 		link = link + fmt.Sprintf("<%v?%v>; rel=\"next\",\n", u, buildLinkHeaderParams(url, nextLimit, nextOffset))
 	}
 
@@ -156,15 +156,24 @@ func (a *apiRequest) queryLinkHeaders(count string) string {
 // original request params for link header
 func buildLinkHeaderParams(url *url.URL, nl, no uint64) string {
 	var s string
-    s = url.RawQuery
-    l := url.Query().Get("limit")
-    o := url.Query().Get("offset")
-     
-    if l != "" {
-        s = strings.Replace(s, "limit="+l, "limit="+strconv.FormatUint(nl, 10), -1)
-    }
-    if o != "" {
-        s = strings.Replace(s, "offset="+o, "offset="+strconv.FormatUint(no, 10), -1)
-    }
+	s = url.RawQuery
+	if s == "" {
+		return fmt.Sprintf("limit=%v&offset=%v", nl, no)
+	}
+	l := url.Query().Get("limit")
+	o := url.Query().Get("offset")
+
+	if l != "" {
+		s = strings.Replace(s, "limit="+l, "limit="+strconv.FormatUint(nl, 10), -1)
+	}
+	if l == "" {
+		s += "&limit=" + strconv.FormatUint(nl, 10)
+	}
+	if o != "" {
+		s = strings.Replace(s, "offset="+o, "offset="+strconv.FormatUint(no, 10), -1)
+	}
+	if o == "" {
+		s += "&offset=" + strconv.FormatUint(no, 10)
+	}
 	return s
 }
