@@ -8,6 +8,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"net/url"
 	"strconv"
+    "strings"
 )
 
 // Build Dynamic where query
@@ -106,7 +107,6 @@ func (a *apiRequest) queryLinkHeaders(count string) string {
 	var link string
 	url := a.Request.R.URL
 	u := url.Scheme + url.Host + url.Path
-	p := buildLinkHeaderParams(url)
 	limit := url.Query().Get("limit")
 	offset := url.Query().Get("offset")
 	if limit == "" {
@@ -135,7 +135,7 @@ func (a *apiRequest) queryLinkHeaders(count string) string {
 	}
 	nextOffset := ioffset + nextLimit
 	if ioffset != icount {
-		link = link + fmt.Sprintf("<%v?limit=%v&offset=%v%v>; rel=\"next\",\n", u, nextLimit, nextOffset, p)
+		link = link + fmt.Sprintf("<%v?%v>; rel=\"next\",\n", u, buildLinkHeaderParams(url, nextLimit, nextOffset))
 	}
 
 	var prevOffset uint64
@@ -147,26 +147,24 @@ func (a *apiRequest) queryLinkHeaders(count string) string {
 		prevLimit = ioffset
 	}
 	if ioffset != 0 {
-		link = link + fmt.Sprintf("<%v?limit=%v&offset=%v%v>; rel=\"prev\",\n", u, prevLimit, prevOffset, p)
+		link = link + fmt.Sprintf("<%v?%v>; rel=\"prev\",\n", u, buildLinkHeaderParams(url, prevLimit, prevOffset))
 	}
 	return link
 }
 
 // hacky string append function to rebuild
 // original request params for link header
-func buildLinkHeaderParams(url *url.URL) string {
+func buildLinkHeaderParams(url *url.URL, nl, no uint64) string {
 	var s string
-	filter := url.Query().Get("filter")
-	if filter != "" {
-		s = s + "&filter=" + filter
-	}
-	fields := url.Query().Get("fields")
-	if fields != "" {
-		s = s + "&fields=" + fields
-	}
-	sort := url.Query().Get("sort")
-	if sort != "" {
-		s = s + "&sort=" + sort
-	}
+    s = url.RawQuery
+    l := url.Query().Get("limit")
+    o := url.Query().Get("offset")
+     
+    if l != "" {
+        s = strings.Replace(s, "limit="+l, "limit="+strconv.FormatUint(nl, 10), -1)
+    }
+    if o != "" {
+        s = strings.Replace(s, "offset="+o, "offset="+strconv.FormatUint(no, 10), -1)
+    }
 	return s
 }
