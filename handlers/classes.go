@@ -20,7 +20,7 @@ func GetAllClasses(db *sql.DB) http.HandlerFunc {
 			Params: parameters.Parameters{},
 			Fks: []FK{
 				FK{"courseSourcedId", "courses", "sourcedId", "sourcedId", "course"},
-                FK{"termSourcedIds", "classAcademicSessions", "academicSessionSourcedId", "classSourcedId", "terms"},
+				FK{"termSourcedIds", "classAcademicSessions", "classSourcedId", "academicSessionSourcedId", "terms"},
 				FK{"schoolSourcedId", "orgs", "sourcedId", "sourcedId", "school"},
 			},
 		}
