@@ -27,6 +27,8 @@ FROM
         ON SUB.CODE = S.SUBJECT
 ORDER BY
     sourcedId
+WHERE
+    S.ACADEMIC_YEAR = '2019'
 /** classes - homeroom(form) **/
 SELECT
     F.FORM_ID AS sourcedId,
