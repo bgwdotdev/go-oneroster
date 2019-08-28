@@ -25,10 +25,10 @@ FROM
         INNER JOIN
     dbo.SUBJECT AS SUB
         ON SUB.CODE = S.SUBJECT
-ORDER BY
-    sourcedId
 WHERE
     S.ACADEMIC_YEAR = '2019'
+ORDER BY
+    sourcedId
 /** classes - homeroom(form) **/
 SELECT
     F.FORM_ID AS sourcedId,
