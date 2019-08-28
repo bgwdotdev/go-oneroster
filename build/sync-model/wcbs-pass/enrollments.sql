@@ -31,6 +31,7 @@ SELECT
     ,FORM.IN_USE AS status
     /* ,null AS dateLastModified */
     ,FORM.FORM_ID AS classSourcedId
+    ,SCHOOL.SCHOOL_ID AS schoolSourcedId
     ,PUPIL.PUPIL_ID AS userSourcedId
     ,'student' AS role
     /* ,null AS primary */
@@ -41,6 +42,9 @@ FROM
         INNER JOIN
     dbo.FORM
         ON FORM.CODE = PUPIL.FORM
+        INNER JOIN
+    dbo.SCHOOL
+        ON SCHOOL.CODE = PUPIL.SCHOOL 
 WHERE
     FORM.ACADEMIC_YEAR = '2019' AND PUPIL.ACADEMIC_YEAR = '2019'
 ORDER BY
@@ -53,6 +57,7 @@ SELECT
     ,FORM.IN_USE AS status
     /* ,null AS dateLastModified */
     ,FORM.FORM_ID As classSourcedId
+    ,SCHOOL.SCHOOL_ID AS schoolSourcedId
     ,STAFF.NAME_ID AS userSourcedId
     ,'teacher' AS role
     ,@T AS 'primary'    
@@ -63,6 +68,9 @@ FROM
         INNER JOIN
     dbo.STAFF
         ON FORM.TUTOR = STAFF.CODE
+        INNER JOIN
+    dbo.SCHOOL
+        ON SCHOOL.CODE = STAFF.SCHOOL 
 WHERE
     FORM.ACADEMIC_YEAR = '2019' 
 ORDER BY
