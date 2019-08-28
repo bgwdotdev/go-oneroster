@@ -25,6 +25,8 @@ FROM
         INNER JOIN
     dbo.SUBJECT AS SUB
         ON SUB.CODE = S.SUBJECT
+WHERE
+    S.ACADEMIC_YEAR = '2019'
 ORDER BY
     sourcedId
 /** classes - homeroom(form) **/
@@ -33,7 +35,7 @@ SELECT
     F.IN_USE AS status,
     F.LAST_AMEND_DATE AS dateLastModified,
     F.DESCRIPTION AS title,
-    /* null AS grades, */
+    FORM_YEAR.AGE_RANGE AS grades,
     /* null AS courseSourcedId */
     F.CODE AS classCode,
     'homeroom' AS classType,
@@ -48,6 +50,9 @@ FROM
         INNER JOIN
     dbo.SCHOOL AS org
         ON org.CODE = F.SCHOOL
+        INNER JOIN
+    dbo.FORM_YEAR
+        ON FORM_YEAR.CODE = F.YEAR_CODE
 WHERE
     F.ACADEMIC_YEAR = '2019'
 ORDER BY

@@ -40,7 +40,7 @@ type FK struct {
 	KeyColumn  string
 	RefTable   string
 	RefColumn  string
-    RefSelect  string
+	RefSelect  string
 	OutputName string
 }
 
@@ -69,7 +69,6 @@ func (r *apiRequest) validateFk(result map[string]interface{}) map[string]interf
 // sets and validates query parameters
 // returns oneroster api error payload if invalid
 func (r *apiRequest) validateParams() ([]error, error) {
-	log.Info(r.Request)
 	errp, err := r.Params.Resolve((r.Request.R.URL.Query()), r.ORData.Columns)
 	if err != nil {
 		return errp, err
@@ -118,8 +117,16 @@ func (a *apiRequest) invoke() {
 	rows := a.queryProperties()
 	defer rows.Close()
 	results := a.buildResults(rows)
+    a.setHeaders()
 	jResults = a.ORData.OutputName
 	o := output{errP, results}
 	render.Status(a.Request.R, http.StatusOK)
 	render.JSON(a.Request.W, a.Request.R, o)
+}
+
+func (a *apiRequest) setHeaders() {
+    h := a.Request.W
+    count := a.queryTotalCount()
+    h.Header().Set("X-Total-Count", count)
+    h.Header().Set("Link", a.queryLinkHeaders(count))
 }

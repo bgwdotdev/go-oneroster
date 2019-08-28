@@ -16,7 +16,7 @@ SELECT
     /* null AS sms, */
     /* null AS phone, */
     P.NAME_ID AS agentSourcedIds,
-    formYear.DFEE_YEAR_NUMBER AS grades
+    formYear.AGE_RANGE AS grades
     /* null AS password */
 FROM
     dbo.PUPIL AS P

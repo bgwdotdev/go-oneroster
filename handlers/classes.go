@@ -15,12 +15,12 @@ func GetAllClasses(db *sql.DB) http.HandlerFunc {
 			ORData: OneRoster{
 				Table:      "classes",
 				Columns:    classesCols,
-				OutputName: "Classes",
+				OutputName: "classes",
 			},
 			Params: parameters.Parameters{},
 			Fks: []FK{
 				FK{"courseSourcedId", "courses", "sourcedId", "sourcedId", "course"},
-                FK{"termSourcedIds", "classAcademicSessions", "academicSessionSourcedId", "classSourcedId", "terms"},
+				FK{"termSourcedIds", "classAcademicSessions", "classSourcedId", "academicSessionSourcedId", "terms"},
 				FK{"schoolSourcedId", "orgs", "sourcedId", "sourcedId", "school"},
 			},
 		}

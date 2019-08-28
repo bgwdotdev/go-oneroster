@@ -5,6 +5,7 @@ import (
 	"github.com/fffnite/go-oneroster/conf"
 	"github.com/fffnite/go-oneroster/handlers"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jwtauth"
 	log "github.com/sirupsen/logrus"
 )
@@ -17,6 +18,7 @@ func Routes(db *sql.DB) *chi.Mux {
 	}
 	tokenAuth := jwtauth.New(c.KeyAlg, []byte(c.Key), nil)
 	r := chi.NewRouter()
+	r.Use(middleware.Logger)
 	r.Post("/login", handlers.Login())
 	r.Get("/", handlers.AllUsers)
 	r.Group(func(r chi.Router) {

@@ -15,7 +15,7 @@ func GetAllCourses(db *sql.DB) http.HandlerFunc {
 			ORData: OneRoster{
 				Table:      "courses",
 				Columns:    courseCols,
-				OutputName: "Courses",
+				OutputName: "courses",
 			},
 			Params: parameters.Parameters{},
 			Fks: []FK{
