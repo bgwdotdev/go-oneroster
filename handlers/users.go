@@ -15,7 +15,7 @@ func GetAllUsers(db *sql.DB) http.HandlerFunc {
 			ORData: OneRoster{
 				Table:      "users",
 				Columns:    userCols,
-				OutputName: "Users",
+				OutputName: "users",
 			},
 			Params: parameters.Parameters{},
 			Fks: []FK{
