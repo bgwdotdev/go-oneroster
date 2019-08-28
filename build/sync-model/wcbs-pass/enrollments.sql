@@ -32,7 +32,7 @@ SELECT
     /* ,null AS dateLastModified */
     ,FORM.FORM_ID AS classSourcedId
     ,SCHOOL.SCHOOL_ID AS schoolSourcedId
-    ,PUPIL.PUPIL_ID AS userSourcedId
+    ,PUPIL.NAME_ID AS userSourcedId
     ,'student' AS role
     /* ,null AS primary */
     /* ,null AS beginDate */
