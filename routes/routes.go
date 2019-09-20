@@ -8,9 +8,10 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jwtauth"
 	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Routes(db *sql.DB) *chi.Mux {
+func Routes(db *sql.DB, db2 *mongo.Client) *chi.Mux {
 	var c conf.AuthConfig
 	err := c.Load()
 	if err != nil {
@@ -32,6 +33,8 @@ func Routes(db *sql.DB) *chi.Mux {
 		r.Get("/users", handlers.GetAllUsers(db))
 		r.Get("/enrollments", handlers.GetAllEnrollments(db))
 	})
+	r.Get("/mongoOrgs", handlers.GetMongoOrgs(db2))
+	// r.Put("/orgs/{id}", handlers.PutOrg())
 	return r
 }
 
