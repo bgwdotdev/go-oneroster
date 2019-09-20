@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"github.com/fffnite/go-oneroster/parameters"
 	"github.com/go-chi/chi"
@@ -65,7 +64,11 @@ func GetMongoOrgs(client *mongo.Client) http.HandlerFunc {
 		collection := client.Database("oneroster").Collection("orgs")
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
-		cur, err := collection.Find(ctx, bson.D{}, options.Find().SetProjection(bson.D{{"_id", 0}}))
+		cur, err := collection.Find(
+			ctx,
+			bson.D{},
+			options.Find().SetProjection(bson.D{{"_id", 0}}),
+		)
 		if err != nil {
 			log.Info(err)
 		}
