@@ -34,6 +34,8 @@ func Routes(db *sql.DB, db2 *mongo.Client) *chi.Mux {
 		r.Get("/enrollments", handlers.GetAllEnrollments(db))
 	})
 	r.Get("/mongoOrgs", handlers.GetMongoOrgs(db2))
+	r.Get("/mongoOrgs/{id}", handlers.GetMongoOrg(db2))
+	r.Put("/mongoOrgs/{id}", handlers.PutMongoOrg(db2))
 	// r.Put("/orgs/{id}", handlers.PutOrg())
 	return r
 }

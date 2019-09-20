@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/fffnite/go-oneroster/parameters"
 	"github.com/go-chi/chi"
@@ -80,6 +81,57 @@ func GetMongoOrgs(client *mongo.Client) http.HandlerFunc {
 		}
 		render.JSON(w, r, results)
 	}
+}
+
+func GetMongoOrg(client *mongo.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		collection := client.Database("oneroster").Collection("orgs")
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		id := chi.URLParam(r, "id")
+		cur, err := collection.Find(ctx, bson.D{{"sourcedId", id}})
+		if err != nil {
+			log.Info(err)
+		}
+		defer cur.Close(ctx)
+		for cur.Next(ctx) {
+			var result bson.M
+			err := cur.Decode(&result)
+			if err != nil {
+				log.Error(err)
+			}
+			render.JSON(w, r, result)
+		}
+	}
+}
+
+func PutMongoOrg(client *mongo.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		collection := client.Database("oneroster").Collection("orgs")
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		id := chi.URLParam(r, "id")
+		var data PutOrg
+		err := render.DecodeJSON(r.Body, &data)
+		if err != nil {
+			log.Info(err)
+			// TODO: fix response
+			render.JSON(w, r, err)
+			return
+		}
+		res, err := collection.UpdateOne(ctx, bson.D{{"sourcedId", id}},
+			bson.D{{"$set", data}},
+			options.Update().SetUpsert(true))
+		if err != nil {
+			log.Info(err)
+		}
+		render.JSON(w, r, res)
+	}
+}
+
+type PutOrg struct {
+	SourcedId string `json:"sourcedId,omitempty" bson:"sourcedId,omitempty"`
+	Status    string `json:"status,omitempty" bson:"status,omitempty"`
 }
 
 func AllUsers(w http.ResponseWriter, r *http.Request) {
