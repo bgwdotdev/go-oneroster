@@ -44,7 +44,8 @@ func GetFilters(q url.Values, safeFields []string) (bson.D, error) {
 			}
 			fp := parseFilterPredicate(f)
 			fv := parseFilterValue(f)
-			filter = append(filter, bson.D{{ff, bson.D{{fp, fv}}}})
+			doc := bson.D{{ff, bson.D{{fp, fv}}}}
+			filter = append(filter, doc)
 		}
 		return bson.D{{lo, filter}}, nil
 	}
@@ -52,10 +53,11 @@ func GetFilters(q url.Values, safeFields []string) (bson.D, error) {
 }
 
 // returns a bson of field filtering for mongodb from url
-func getFields(q url.Values, safeFields []string) ([]bson.D, error) {
+func getFields(q url.Values, safeFields []string) (bson.D, error) {
 	v := q.Get("fields")
-	d := bson.D{{"_id", 0}}
-	fields := []bson.D{d}
+	d := bson.E{"_id", 0}
+	var fields bson.D
+	fields = append(fields, d)
 	if v != "" {
 		s := strings.Split(v, ",")
 		for _, f := range s {
@@ -63,9 +65,9 @@ func getFields(q url.Values, safeFields []string) ([]bson.D, error) {
 			if err != nil {
 				err.(*ErrorObject).CodeMinor = "invalid_selection_field"
 				err.(*ErrorObject).Populate()
-				return []bson.D{d}, err
+				return bson.D{d}, err
 			}
-			fields = append(fields, bson.D{{f, 1}})
+			fields = append(fields, bson.E{f, 1})
 		}
 	}
 	return fields, nil
