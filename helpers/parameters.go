@@ -2,6 +2,8 @@ package helpers
 
 import ()
 
+// returns the database query parameters based on user url request
+// e.g. ?limit=1&fields=id
 func GetOptions() (*mongo.FindOptions, []error) {
 	var errP []error
 	projection, err := getFields(url)
@@ -21,6 +23,8 @@ func GetOptions() (*mongo.FindOptions, []error) {
 	return o, ep
 }
 
+// returns the filtering query based on user url request
+// e.g. ?filter=id>='1'
 func GetFilters(q url.Values, safeFields []string) (bson.D, error) {
 	v := q.Get("filter")
 	if v != "" {
@@ -41,6 +45,7 @@ func GetFilters(q url.Values, safeFields []string) (bson.D, error) {
 	return bson.D{}, nil
 }
 
+// returns a bson of field filtering for mongodb from url
 func getFields(q url.Values, safeFields []string) ([]bson.DocElem, error) {
 	v := q.Get("fields")
 	d := bson.DocElem{"_id", 0}
@@ -60,6 +65,8 @@ func getFields(q url.Values, safeFields []string) ([]bson.DocElem, error) {
 	return fields, nil
 }
 
+// returns the user requested field to sort by
+// validated against a field whitelist
 func getSort(q url.Values, safeFields []string) (string, error) {
 	v := q.Get("sort")
 	d := "sourcedId"
@@ -75,6 +82,7 @@ func getSort(q url.Values, safeFields []string) (string, error) {
 	return d
 }
 
+// returns the max doc count requested by user
 func getLimit(q url.Values) int {
 	v := q.Get("limit")
 	if v != "" {
@@ -83,6 +91,7 @@ func getLimit(q url.Values) int {
 	return 100
 }
 
+// returns the doc skip requested by user
 func getOffset(q url.Values) int {
 	v := q.Get("offset")
 	if v != "" {
