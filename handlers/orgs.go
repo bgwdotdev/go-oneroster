@@ -140,7 +140,7 @@ func GetMongoOrg(client *mongo.Client) http.HandlerFunc {
 }
 
 // Upserts a specific item based off the sourcedId
-func DecodeDoc(c *mongo.Collection, data interface{},
+func PutDoc(c *mongo.Collection, data interface{},
 	w http.ResponseWriter, r *http.Request) {
 	err := render.DecodeJSON(r.Body, &data)
 	if err != nil {
@@ -149,10 +149,6 @@ func DecodeDoc(c *mongo.Collection, data interface{},
 		render.JSON(w, r, err)
 		return
 	}
-}
-
-func PutDoc(c *mongo.Collection, data interface{},
-	w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{{"sourcedId", chi.URLParam(r, "id")}}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -171,10 +167,9 @@ func PutDoc(c *mongo.Collection, data interface{},
 func PutMongoOrg(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		collection := client.Database("oneroster").Collection("orgs")
-		var p PutOrg
-		DecodeDoc(collection, p, w, r)
-		p.DateLastModified = time.Now()
-		PutDoc(collection, p, w, r)
+		var data PutOrg
+		data.DateLastModified = time.Now()
+		PutDoc(collection, &data, w, r)
 	}
 }
 
