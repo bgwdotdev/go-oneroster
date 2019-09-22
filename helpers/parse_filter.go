@@ -69,3 +69,20 @@ func removeSingleQuotes(s string) string {
 	s = e.Split(s, -1)[0]
 	return s
 }
+
+// Compares the requested field against a list of field names
+// Returns matched field name
+func validateField(s string, safeFields []string) (string, error) {
+	var f string
+	for _, v := range safeFields {
+		if s == v {
+			f = v
+		}
+	}
+	if f == "" {
+		err := fmt.Sprintf("Unknown field: %v", s)
+		log.Info(err)
+		return "", &helpers.ErrorObject{Description: err}
+	}
+	return f, nil
+}
