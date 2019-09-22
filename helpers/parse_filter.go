@@ -1,6 +1,10 @@
 package helpers
 
-import ()
+import (
+	"fmt"
+	"regexp"
+	"strings"
+)
 
 // parses the logical operator from a filter string
 // supports OR AND
@@ -81,7 +85,6 @@ func validateField(s string, safeFields []string) (string, error) {
 	}
 	if f == "" {
 		err := fmt.Sprintf("Unknown field: %v", s)
-		log.Info(err)
 		return "", &helpers.ErrorObject{Description: err}
 	}
 	return f, nil
