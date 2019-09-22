@@ -174,19 +174,19 @@ func PutMongoOrg(client *mongo.Client) http.HandlerFunc {
 }
 
 type PutOrg struct {
-	SourcedId        string    `json:"sourcedId,omitempty" bson:"sourcedId,omitempty"`
-	Status           string    `json:"status,omitempty" bson:"status,omitempty"`
+	SourcedId        string    `json:"sourcedId" bson:"sourcedId"`
+	Status           string    `json:"status" bson:"status"`
 	DateLastModified time.Time `json:"dateLastModified" bson:"dateLastModified"`
-	Name             string    `json:"name,omitempty" bson:"name,omitempty"`
-	Identifier       string    `json:"identifier,omitempty" bson:"identifier,omitempty"`
+	Name             string    `json:"name" bson:"name"`
+	Identifier       string    `json:"identifier" bson:"identifier"`
 	Parent           struct {
-		SourcedId string `json:"sourcedId,omitempty" bson:"sourcedId,omitempty"`
-		Type      string `json:"type,omitempty" bson:"type,omitempty"`
-	} `json:"parent,omitempty" bson:"parent,omitempty"`
+		SourcedId string `json:"sourcedId" bson:"sourcedId"`
+		Type      string `json:"type" bson:"type"`
+	} `json:"parent" bson:"parent"`
 	Children []struct {
-		SourcedId string `json:"sourcedId,omitempty" bson:"sourceId,omitempty"`
-		Type      string `json:"type,omitempty" bson:"type,omitempty"`
-	} `json:"children,omitempty" bson:"children,omitempty"`
+		SourcedId string `json:"sourcedId" bson:"sourceId"`
+		Type      string `json:"type" bson:"type"`
+	} `json:"children" bson:"children"`
 }
 
 func AllUsers(w http.ResponseWriter, r *http.Request) {
