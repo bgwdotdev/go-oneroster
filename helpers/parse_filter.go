@@ -77,12 +77,12 @@ func removeSingleQuotes(s string) string {
 // errors if no match
 func validateField(s string, safeFields []string) error {
 	for _, v := range safeFields {
-		if s != v {
-			err := fmt.Sprintf("Unknown field: %v", s)
-			return &ErrorObject{Description: err}
+		if s == v {
+			return nil
 		}
 	}
-	return nil
+	err := fmt.Sprintf("Unknown field: %v", s)
+	return &ErrorObject{Description: err}
 }
 
 // splits up to 2 queries up into seperate slices
