@@ -156,7 +156,12 @@ func PutDoc(c *mongo.Collection, data interface{},
 	filter := bson.D{{"sourcedId", chi.URLParam(r, "id")}}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	res, err := c.UpdateOne(ctx, filter, bson.D{{"$set", data}}, options.Update().SetUpsert(true))
+	res, err := c.UpdateOne(
+		ctx,
+		filter,
+		bson.D{{"$set", data}},
+		options.Update().SetUpsert(true),
+	)
 	if err != nil {
 		log.Info(err)
 	}
