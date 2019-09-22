@@ -60,85 +60,116 @@ func GetOrg(db *sql.DB) http.HandlerFunc {
 	}
 }
 
+// Gets a collection of docs
+func GetCollection(c *mongo.Collection, pf []string,
+	w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter, err := helpers.GetFilters(r.URL.Query(), pf)
+	if err != nil {
+		log.Error(err)
+	}
+	options, errP := helpers.GetOptions(r.URL.Query(), pf)
+	if errP != nil {
+		log.Error(errP)
+	}
+	cur, err := c.Find(
+		ctx,
+		filter,
+		options,
+	)
+	if err != nil {
+		log.Error(err)
+	}
+	defer cur.Close(ctx)
+	var results []bson.M
+	for cur.Next(ctx) {
+		var result bson.M
+		err := cur.Decode(&result)
+		if err != nil {
+			log.Error(err)
+		}
+		results = append(results, result)
+	}
+	render.JSON(w, r, results)
+}
+
+// Gets a specific item based off the sourcedId
+func GetDoc(c *mongo.Collection, pf []string,
+	w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	filter := bson.D{{"sourcedId", chi.URLParam(r, "id")}}
+	options, errP := helpers.GetOptions(r.URL.Query(), pf)
+	if errP != nil {
+		log.Error(errP)
+	}
+	cur, err := c.Find(
+		ctx,
+		filter,
+		options,
+	)
+	if err != nil {
+		log.Error(err)
+	}
+	defer cur.Close(ctx)
+	var results []bson.M
+	for cur.Next(ctx) {
+		var result bson.M
+		err := cur.Decode(&result)
+		if err != nil {
+			log.Error(err)
+		}
+		results = append(results, result)
+	}
+	render.JSON(w, r, results)
+}
+
 func GetMongoOrgs(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		collection := client.Database("oneroster").Collection("orgs")
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		filter, err := helpers.GetFilters(r.URL.Query(), publicCols)
-		if err != nil {
-			log.Error(err)
-		}
-		options, errP := helpers.GetOptions(r.URL.Query(), publicCols)
-		if errP != nil {
-			log.Error(errP)
-		}
-		cur, err := collection.Find(
-			ctx,
-			filter,
-			options,
-		)
-		if err != nil {
-			log.Error(err)
-		}
-		defer cur.Close(ctx)
-		var results []bson.M
-		for cur.Next(ctx) {
-			var result bson.M
-			err := cur.Decode(&result)
-			if err != nil {
-				log.Error(err)
-			}
-			results = append(results, result)
-		}
-		render.JSON(w, r, results)
+		GetCollection(collection, publicCols, w, r)
 	}
 }
 
 func GetMongoOrg(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		collection := client.Database("oneroster").Collection("orgs")
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		id := chi.URLParam(r, "id")
-		cur, err := collection.Find(ctx, bson.D{{"sourcedId", id}})
-		if err != nil {
-			log.Info(err)
-		}
-		defer cur.Close(ctx)
-		for cur.Next(ctx) {
-			var result bson.M
-			err := cur.Decode(&result)
-			if err != nil {
-				log.Error(err)
-			}
-			render.JSON(w, r, result)
-		}
+		GetDoc(collection, publicCols, w, r)
 	}
+}
+
+// Upserts a specific item based off the sourcedId
+func DecodeDoc(c *mongo.Collection, data interface{},
+	w http.ResponseWriter, r *http.Request) {
+	err := render.DecodeJSON(r.Body, &data)
+	if err != nil {
+		log.Info(err)
+		// TODO: fix response
+		render.JSON(w, r, err)
+		return
+	}
+}
+
+func PutDoc(c *mongo.Collection, data interface{},
+	w http.ResponseWriter, r *http.Request) {
+	filter := bson.D{{"sourcedId", chi.URLParam(r, "id")}}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	res, err := c.UpdateOne(ctx, filter, bson.D{{"$set", data}}, options.Update().SetUpsert(true))
+	if err != nil {
+		log.Info(err)
+	}
+	render.JSON(w, r, res)
 }
 
 func PutMongoOrg(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		collection := client.Database("oneroster").Collection("orgs")
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		id := chi.URLParam(r, "id")
-		var data PutOrg
-		err := render.DecodeJSON(r.Body, &data)
-		if err != nil {
-			log.Info(err)
-			// TODO: fix response
-			render.JSON(w, r, err)
-			return
-		}
-		data.DateLastModified = time.Now()
-		res, err := collection.UpdateOne(ctx, bson.D{{"sourcedId", id}},
-			bson.D{{"$set", data}},
-			options.Update().SetUpsert(true))
-		if err != nil {
-			log.Info(err)
-		}
-		render.JSON(w, r, res)
+		var p PutOrg
+		DecodeDoc(collection, p, w, r)
+		p.DateLastModified = time.Now()
+		PutDoc(collection, p, w, r)
 	}
 }
 
@@ -151,11 +182,11 @@ type PutOrg struct {
 	Parent           struct {
 		SourcedId string `json:"sourcedId,omitempty" bson:"sourcedId,omitempty"`
 		Type      string `json:"type,omitempty" bson:"type,omitempty"`
-	}
+	} `json:"parent,omitempty" bson:"parent,omitempty"`
 	Children []struct {
 		SourcedId string `json:"sourcedId,omitempty" bson:"sourceId,omitempty"`
 		Type      string `json:"type,omitempty" bson:"type,omitempty"`
-	}
+	} `json:"children,omitempty" bson:"children,omitempty"`
 }
 
 func AllUsers(w http.ResponseWriter, r *http.Request) {
