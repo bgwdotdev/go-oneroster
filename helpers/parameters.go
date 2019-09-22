@@ -2,7 +2,7 @@ package helpers
 
 import ()
 
-// returns the database query parameters based on user url request
+// builds the database query parameters based on user url request
 // e.g. ?limit=1&fields=id
 func GetOptions() (*mongo.FindOptions, []error) {
 	var errP []error
@@ -23,7 +23,7 @@ func GetOptions() (*mongo.FindOptions, []error) {
 	return o, ep
 }
 
-// returns the filtering query based on user url request
+// builds the filtering query based on user url request
 // e.g. ?filter=id>='1'
 func GetFilters(q url.Values, safeFields []string) (bson.D, error) {
 	v := q.Get("filter")
