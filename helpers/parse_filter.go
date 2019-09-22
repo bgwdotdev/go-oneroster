@@ -10,8 +10,7 @@ import (
 // supports OR AND
 func parseFilterLo(s string) string {
 	r := regexp.MustCompile(`(\sAND|OR\s)`)
-	lo := r.FindString(s)
-	switch lo := r.FindString(s); lo {
+	switch r.FindString(s) {
 	case " OR ":
 		return "$or"
 	default:
@@ -24,45 +23,45 @@ func parseFilterLo(s string) string {
 func parseFilterField(s string, safeCol []string) (string, error) {
 	r := regexp.MustCompile(`([a-zA-Z]*)`)
 	v := r.FindString(s)
-	field, err := validateField(v, safeCol)
+	err := validateField(v, safeCol)
 	if err != nil {
 		err.(*ErrorObject).CodeMinor = "invalid_filter_field"
 		err.(*ErrorObject).Populate()
 		return "", err
 	}
-	return field, nil
+	return v, nil
 }
 
 // parses the comparison operator from a filter string
 // returns mongodb predicate
 func parseFilterPredicate(s string) string {
 	r := regexp.MustCompile(`([=><~!]{1,2})`)
-	var r string
+	var res string
 	switch p := r.FindString(s); p {
 	case "=":
-		r = "$eq"
+		res = "$eq"
 	case "!=":
-		r = "$ne"
+		res = "$ne"
 	case ">":
-		r = "$gt"
+		res = "$gt"
 	case ">=":
-		r = "$gte"
+		res = "$gte"
 	case "<":
-		r = "$lt"
+		res = "$lt"
 	case "<=":
-		r = "$lte"
+		res = "$lte"
 	case "~":
-		r = "$regex"
+		res = "$regex"
 	default:
-		r = "$eq"
+		res = "$eq"
 	}
-	return r
+	return res
 }
 
 // parses the target value of a filter string held single quotes
 func parseFilterValue(s string) string {
 	r := regexp.MustCompile(`([']\S*['])`)
-	return removeSingleQuotes(r.FindStrings(s))
+	return removeSingleQuotes(r.FindString(s))
 }
 
 // removes single straight quotes from the start and end of a string
@@ -75,17 +74,28 @@ func removeSingleQuotes(s string) string {
 }
 
 // Compares the requested field against a list of field names
-// Returns matched field name
-func validateField(s string, safeFields []string) (string, error) {
-	var f string
+// errors if no match
+func validateField(s string, safeFields []string) error {
 	for _, v := range safeFields {
-		if s == v {
-			f = v
+		if s != v {
+			err := fmt.Sprintf("Unknown field: %v", s)
+			return &ErrorObject{Description: err}
 		}
 	}
-	if f == "" {
-		err := fmt.Sprintf("Unknown field: %v", s)
-		return "", &helpers.ErrorObject{Description: err}
+	return nil
+}
+
+// splits up to 2 queries up into seperate slices
+// "name='bob' age=>'18'
+func splitFilterQuery(s string) []string {
+	r := regexp.MustCompile(`([a-zA-Z]*[=><~!]{1,2}[']\S*['])`)
+	var fs []string
+	for i := 0; i < 2; i++ {
+		if r.MatchString(s) {
+			f := r.FindString(s)
+			fs = append(fs, f)
+			s = strings.Split(s, f)[1]
+		}
 	}
-	return f, nil
+	return fs
 }
