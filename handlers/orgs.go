@@ -131,6 +131,7 @@ func PutMongoOrg(client *mongo.Client) http.HandlerFunc {
 			render.JSON(w, r, err)
 			return
 		}
+		data.DateLastModified = time.Now()
 		res, err := collection.UpdateOne(ctx, bson.D{{"sourcedId", id}},
 			bson.D{{"$set", data}},
 			options.Update().SetUpsert(true))
@@ -142,8 +143,19 @@ func PutMongoOrg(client *mongo.Client) http.HandlerFunc {
 }
 
 type PutOrg struct {
-	SourcedId string `json:"sourcedId,omitempty" bson:"sourcedId,omitempty"`
-	Status    string `json:"status,omitempty" bson:"status,omitempty"`
+	SourcedId        string    `json:"sourcedId,omitempty" bson:"sourcedId,omitempty"`
+	Status           string    `json:"status,omitempty" bson:"status,omitempty"`
+	DateLastModified time.Time `json:"dateLastModified" bson:"dateLastModified"`
+	Name             string    `json:"name,omitempty" bson:"name,omitempty"`
+	Identifier       string    `json:"identifier,omitempty" bson:"identifier,omitempty"`
+	Parent           struct {
+		SourcedId string `json:"sourcedId,omitempty" bson:"sourcedId,omitempty"`
+		Type      string `json:"type,omitempty" bson:"type,omitempty"`
+	}
+	Children []struct {
+		SourcedId string `json:"sourcedId,omitempty" bson:"sourceId,omitempty"`
+		Type      string `json:"type,omitempty" bson:"type,omitempty"`
+	}
 }
 
 func AllUsers(w http.ResponseWriter, r *http.Request) {
