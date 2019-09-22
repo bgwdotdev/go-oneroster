@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/fffnite/go-oneroster/helpers"
 	"github.com/fffnite/go-oneroster/parameters"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -64,13 +65,21 @@ func GetMongoOrgs(client *mongo.Client) http.HandlerFunc {
 		collection := client.Database("oneroster").Collection("orgs")
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
+		filter, err := helpers.GetFilters(r.URL.Query(), publicCols)
+		if err != nil {
+			log.Error(err)
+		}
+		options, errP := helpers.GetOptions(r.URL.Query(), publicCols)
+		if errP != nil {
+			log.Error(errP)
+		}
 		cur, err := collection.Find(
 			ctx,
-			bson.D{},
-			options.Find().SetProjection(bson.D{{"_id", 0}}),
+			filter,
+			options,
 		)
 		if err != nil {
-			log.Info(err)
+			log.Error(err)
 		}
 		defer cur.Close(ctx)
 		var results []bson.M
