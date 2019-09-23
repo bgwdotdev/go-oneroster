@@ -30,19 +30,19 @@ func PutOrg(client *mongo.Client) http.HandlerFunc {
 }
 
 type Org struct {
-	SourcedId        string    `json:"sourcedId" bson:"sourcedId"`
-	Status           string    `json:"status" bson:"status"`
-	DateLastModified time.Time `json:"dateLastModified" bson:"dateLastModified"`
-	Name             string    `json:"name" bson:"name"`
-	Identifier       string    `json:"identifier" bson:"identifier"`
+	SourcedId        string    `json:"sourcedId" bson:"sourcedId,omitempty"`
+	Status           string    `json:"status" bson:"status,omitempty"`
+	DateLastModified time.Time `json:"dateLastModified" bson:"dateLastModified,omitempty"`
+	Name             string    `json:"name" bson:"name,omitempty"`
+	Identifier       string    `json:"identifier" bson:"identifier,omitempty"`
 	Parent           struct {
-		SourcedId string `json:"sourcedId" bson:"sourcedId"`
-		Type      string `json:"type" bson:"type"`
-	} `json:"parent" bson:"parent"`
+		SourcedId string `json:"sourcedId" bson:"sourcedId,omitempty"`
+		Type      string `json:"type" bson:"type,omitempty"`
+	} `json:"parent" bson:"parent,omitempty"`
 	Children []struct {
-		SourcedId string `json:"sourcedId" bson:"sourceId"`
-		Type      string `json:"type" bson:"type"`
-	} `json:"children" bson:"children"`
+		SourcedId string `json:"sourcedId" bson:"sourceId,omitempty"`
+		Type      string `json:"type" bson:"type,omitempty"`
+	} `json:"children" bson:"children,omitempty"`
 }
 
 var publicCols = []string{"sourcedId",
