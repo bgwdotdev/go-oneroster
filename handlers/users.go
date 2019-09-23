@@ -56,14 +56,14 @@ var userCols = []string{
 func GetAllUsers(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c := client.Database("oneroster").Collection("users")
-		GetCollection(c, asCols, w, r)
+		GetCollection(c, userCols, w, r)
 	}
 }
 
 func GetUser(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c := client.Database("oneroster").Collection("users")
-		GetDoc(c, asCols, w, r)
+		GetDoc(c, userCols, w, r)
 	}
 }
 

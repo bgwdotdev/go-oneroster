@@ -20,7 +20,7 @@ type courses struct {
 	Resources        []*Nested `json:"resources" bson:"resources,omitempty"`
 }
 
-var courseCols = []string{
+var coursesCols = []string{
 	"sourcedId",
 	"status",
 	"dateLastModified",
@@ -37,14 +37,14 @@ var courseCols = []string{
 func GetAllCourses(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c := client.Database("oneroster").Collection("courses")
-		GetCollection(c, asCols, w, r)
+		GetCollection(c, coursesCols, w, r)
 	}
 }
 
 func GetCourses(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c := client.Database("oneroster").Collection("courses")
-		GetDoc(c, asCols, w, r)
+		GetDoc(c, coursesCols, w, r)
 	}
 }
 

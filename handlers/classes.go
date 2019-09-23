@@ -45,14 +45,14 @@ var classesCols = []string{
 func GetAllClasses(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c := client.Database("oneroster").Collection("classes")
-		GetCollection(c, asCols, w, r)
+		GetCollection(c, classesCols, w, r)
 	}
 }
 
 func GetClasses(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c := client.Database("oneroster").Collection("classes")
-		GetDoc(c, asCols, w, r)
+		GetDoc(c, classesCols, w, r)
 	}
 }
 

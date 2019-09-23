@@ -35,14 +35,14 @@ var enrollmentsCols = []string{
 func GetAllEnrollments(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c := client.Database("oneroster").Collection("enrollments")
-		GetCollection(c, asCols, w, r)
+		GetCollection(c, enrollmentsCols, w, r)
 	}
 }
 
 func GetEnrollments(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c := client.Database("oneroster").Collection("enrollments")
-		GetDoc(c, asCols, w, r)
+		GetDoc(c, enrollmentsCols, w, r)
 	}
 }
 
