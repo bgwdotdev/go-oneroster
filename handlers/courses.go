@@ -1,30 +1,23 @@
 package handlers
 
 import (
-	"database/sql"
-	"github.com/fffnite/go-oneroster/parameters"
-	_ "github.com/mattn/go-sqlite3"
+	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
+	"time"
 )
 
-func GetAllCourses(db *sql.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		api := apiRequest{
-			Request: Req{w, r},
-			DB:      db,
-			ORData: OneRoster{
-				Table:      "courses",
-				Columns:    courseCols,
-				OutputName: "courses",
-			},
-			Params: parameters.Parameters{},
-			Fks: []FK{
-				FK{"schoolYearSourcedId", "academicSessions", "sourcedId", "sourcedId", "schoolYear"},
-				FK{"orgSourcedId", "orgs", "sourcedId", "sourcedId", "org"},
-			},
-		}
-		api.invoke()
-	}
+type courses struct {
+	SourcedId        string    `json:"sourcedId" bson:"sourcedId,omitempty"`
+	Status           string    `json:"status" bson:"status,omitempty"`
+	DateLastModified time.Time `json:"dateLastModified" bson:"dateLastModified,omitempty"`
+	Title            string    `json:"title" bson:"title,omitempty"`
+	SchoolYear       *Nested   `json:"schoolYear" bson:"schoolYear,omitempty"`
+	CourseCode       string    `json:"coursecode" bson:"courseCode,omitempty"`
+	Grades           []string  `json:"grades" bson:"grades,omitempty"`
+	Subjects         []string  `json:"subjects" bson:"subjects,omitempty"`
+	Org              *Nested   `json:"org" bson:"org,omitempty"`
+	SubjectCodes     []string  `json:"subjectCodes" bson:"subjectCodes,omitempty"`
+	Resources        []*Nested `json:"resources" bson:"resources,omitempty"`
 }
 
 var courseCols = []string{
@@ -38,4 +31,27 @@ var courseCols = []string{
 	"orgSourcedId",
 	"subjects",
 	"subjectCodes",
+}
+
+func GetAllCourses(client *mongo.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c := client.Database("oneroster").Collection("courses")
+		GetCollection(c, asCols, w, r)
+	}
+}
+
+func GetCourses(client *mongo.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c := client.Database("oneroster").Collection("courses")
+		GetDoc(c, asCols, w, r)
+	}
+}
+
+func PutCourses(client *mongo.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c := client.Database("oneroster").Collection("courses")
+		var data courses
+		data.DateLastModified = time.Now()
+		PutDoc(c, &data, w, r)
+	}
 }
