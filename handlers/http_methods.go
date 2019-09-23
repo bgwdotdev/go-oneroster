@@ -13,6 +13,11 @@ import (
 	"time"
 )
 
+type Nested struct {
+	SourcedId string `json:"sourcedId" bson:"sourcedId,omitempty"`
+	Type      string `json:"type" bson:"type,omitempty"`
+}
+
 // Gets a collection of docs
 func GetCollection(c *mongo.Collection, pf []string,
 	w http.ResponseWriter, r *http.Request) {
