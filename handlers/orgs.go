@@ -9,14 +9,14 @@ import (
 func GetAllOrgs(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		collection := client.Database("oneroster").Collection("orgs")
-		GetCollection(collection, publicCols, w, r)
+		GetCollection(collection, orgCols, w, r)
 	}
 }
 
 func GetOrg(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		collection := client.Database("oneroster").Collection("orgs")
-		GetDoc(collection, publicCols, w, r)
+		GetDoc(collection, orgCols, w, r)
 	}
 }
 
@@ -34,22 +34,19 @@ type Org struct {
 	Status           string    `json:"status" bson:"status,omitempty"`
 	DateLastModified time.Time `json:"dateLastModified" bson:"dateLastModified,omitempty"`
 	Name             string    `json:"name" bson:"name,omitempty"`
+	Type             string    `json:"type" bson:"type,omitempty"`
 	Identifier       string    `json:"identifier" bson:"identifier,omitempty"`
-	Parent           struct {
-		SourcedId string `json:"sourcedId" bson:"sourcedId,omitempty"`
-		Type      string `json:"type" bson:"type,omitempty"`
-	} `json:"parent" bson:"parent,omitempty"`
-	Children []struct {
-		SourcedId string `json:"sourcedId" bson:"sourceId,omitempty"`
-		Type      string `json:"type" bson:"type,omitempty"`
-	} `json:"children" bson:"children,omitempty"`
+	Parent           *Nested   `json:"parent" bson:"parent,omitempty"`
+	Children         []*Nested `json:"children" bson:"children,omitempty"`
 }
 
-var publicCols = []string{"sourcedId",
+var orgCols = []string{
+	"sourcedId",
 	"status",
 	"dateLastModified",
 	"name",
 	"type",
 	"identifier",
-	"parentSourcedId",
+	"parent",
+	"children",
 }
