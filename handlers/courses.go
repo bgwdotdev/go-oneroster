@@ -24,13 +24,14 @@ var courseCols = []string{
 	"sourcedId",
 	"status",
 	"dateLastModified",
-	"schoolYearSourcedId",
 	"title",
+	"schoolYear",
 	"courseCode",
 	"grades",
-	"orgSourcedId",
 	"subjects",
+	"org",
 	"subjectCodes",
+	"resources",
 }
 
 func GetAllCourses(client *mongo.Client) http.HandlerFunc {
