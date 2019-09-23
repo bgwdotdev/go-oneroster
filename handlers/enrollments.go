@@ -1,42 +1,56 @@
 package handlers
 
 import (
-	"database/sql"
-	"github.com/fffnite/go-oneroster/parameters"
-	_ "github.com/mattn/go-sqlite3"
+	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
+	"time"
 )
 
-func GetAllEnrollments(db *sql.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		api := apiRequest{
-			Request: Req{w, r},
-			DB:      db,
-			ORData: OneRoster{
-				Table:      "enrollments",
-				Columns:    enrollmentsCols,
-				OutputName: "enrollments",
-			},
-			Params: parameters.Parameters{},
-			Fks: []FK{
-				FK{"classSourcedId", "classes", "sourcedId", "sourcedId", "class"},
-				FK{"schoolSourcedId", "orgs", "sourcedId", "sourcedId", "school"},
-				FK{"userSourcedId", "users", "sourcedId", "sourcedId", "user"},
-			},
-		}
-		api.invoke()
-	}
+type enrollments struct {
+	SourcedId        string    `json:"sourcedId" bson:"sourcedId,omitempty"`
+	Status           string    `json:"status" bson:"status,omitempty"`
+	DateLastModified time.Time `json:"dateLastModified" bson:"dateLastModified,omitempty"`
+	User             *Nested   `json:"user" bson:"user,omitempty"`
+	Class            *Nested   `json:"class" bson:"class,omitempty"`
+	School           *Nested   `json:"school" bson:"school,omitempty"`
+	Role             string    `json:"role" bson:"role,omitempty"`
+	Primary          bool      `json:"primary" bson:"primary,omitempty"`
+	BeginDate        string    `json:"beginDate" bson:"beginDate,omitempty"`
+	EndDate          string    `json:"endDate" bson:"endDate,omitempty"`
 }
 
 var enrollmentsCols = []string{
 	"sourcedId",
 	"status",
 	"dateLastModified",
-	"classSourcedId",
-	"schoolSourcedId",
-	"userSourcedId",
+	"user",
+	"class",
+	"school",
 	"role",
-	"'primary'",
+	"primary",
 	"beginDate",
 	"endDate",
+}
+
+func GetAllEnrollments(client *mongo.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c := client.Database("oneroster").Collection("enrollments")
+		GetCollection(c, asCols, w, r)
+	}
+}
+
+func GetEnrollments(client *mongo.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c := client.Database("oneroster").Collection("enrollments")
+		GetDoc(c, asCols, w, r)
+	}
+}
+
+func PutEnrollments(client *mongo.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c := client.Database("oneroster").Collection("enrollments")
+		var data enrollments
+		data.DateLastModified = time.Now()
+		PutDoc(c, &data, w, r)
+	}
 }
