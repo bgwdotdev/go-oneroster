@@ -75,3 +75,11 @@ func PutUser(client *mongo.Client) http.HandlerFunc {
 		PutDoc(c, &data, w, r)
 	}
 }
+
+func PutUserId(client *mongo.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c := client.Database("oneroster").Collection("users")
+		var data nestedUid
+		PutNestedDoc(c, &data, "userIds", "type", w, r)
+	}
+}
