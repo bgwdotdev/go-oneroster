@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"database/sql"
 	"github.com/fffnite/go-oneroster/conf"
 	"github.com/fffnite/go-oneroster/handlers"
 	"github.com/go-chi/chi"
@@ -11,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Routes(db *sql.DB, db2 *mongo.Client) *chi.Mux {
+func Routes(db2 *mongo.Client) *chi.Mux {
 	var c conf.AuthConfig
 	err := c.Load()
 	if err != nil {
