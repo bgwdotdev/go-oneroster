@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"github.com/go-chi/render"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 	"time"
@@ -35,14 +37,25 @@ var asCols = []string{
 func GetAllAcademicSessions(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c := client.Database("oneroster").Collection("academicSessions")
-		GetCollection(c, asCols, w, r)
+		res, errP := GetCollection(c, asCols, w, r)
+		out := struct {
+			Output       []bson.M `json:"academicSessions,omitempty"`
+			ErrorPayload []error  `json:"statusInfoSet,omitempty"`
+		}{res, errP}
+		render.JSON(w, r, out)
+
 	}
 }
 
 func GetAcademicSession(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c := client.Database("oneroster").Collection("academicSessions")
-		GetDoc(c, asCols, w, r)
+		res, errP := GetDoc(c, asCols, w, r)
+		out := struct {
+			Output       bson.M  `json:"academicSession,omitempty"`
+			ErrorPayload []error `json:"statusInfoSet,omitempty"`
+		}{res, errP}
+		render.JSON(w, r, out)
 	}
 }
 

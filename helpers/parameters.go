@@ -29,6 +29,23 @@ func GetOptions(q url.Values, safeFields []string) (*options.FindOptions, []erro
 	return o, errP
 }
 
+func GetOption(q url.Values, safeFields []string) (*options.FindOneOptions, []error) {
+	var errP []error
+	projection, err := getFields(q, safeFields)
+	if err != nil {
+		errP = append(errP, err)
+	}
+	sort, err := getSort(q, safeFields)
+	if err != nil {
+		errP = append(errP, err)
+	}
+	o := options.
+		FindOne().
+		SetSort(bson.D{{sort, 1}}).
+		SetProjection(projection)
+	return o, errP
+}
+
 // builds the filtering query based on user url request
 // e.g. ?filter=id>='1'
 func GetFilters(q url.Values, safeFields []string) (bson.D, error) {

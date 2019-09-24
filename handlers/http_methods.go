@@ -19,8 +19,10 @@ type Nested struct {
 }
 
 // Gets a collection of docs
-func GetCollection(c *mongo.Collection, pf []string,
-	w http.ResponseWriter, r *http.Request) {
+func GetCollection(
+	c *mongo.Collection, pf []string,
+	w http.ResponseWriter, r *http.Request,
+) ([]bson.M, []error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	filter, err := helpers.GetFilters(r.URL.Query(), pf)
@@ -28,9 +30,6 @@ func GetCollection(c *mongo.Collection, pf []string,
 		log.Error(err)
 	}
 	options, errP := helpers.GetOptions(r.URL.Query(), pf)
-	if errP != nil {
-		log.Error(errP)
-	}
 	cur, err := c.Find(
 		ctx,
 		filter,
@@ -49,38 +48,29 @@ func GetCollection(c *mongo.Collection, pf []string,
 		}
 		results = append(results, result)
 	}
-	render.JSON(w, r, results)
+	return results, errP
 }
 
 // Gets a specific item based off the sourcedId
-func GetDoc(c *mongo.Collection, pf []string,
-	w http.ResponseWriter, r *http.Request) {
+func GetDoc(
+	c *mongo.Collection, pf []string,
+	w http.ResponseWriter, r *http.Request,
+) (bson.M, []error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	filter := bson.D{{"sourcedId", chi.URLParam(r, "id")}}
-	options, errP := helpers.GetOptions(r.URL.Query(), pf)
-	if errP != nil {
-		log.Error(errP)
-	}
-	cur, err := c.Find(
+	options, errP := helpers.GetOption(r.URL.Query(), pf)
+	cur := c.FindOne(
 		ctx,
 		filter,
 		options,
 	)
+	var result bson.M
+	err := cur.Decode(&result)
 	if err != nil {
 		log.Error(err)
 	}
-	defer cur.Close(ctx)
-	var results []bson.M
-	for cur.Next(ctx) {
-		var result bson.M
-		err := cur.Decode(&result)
-		if err != nil {
-			log.Error(err)
-		}
-		results = append(results, result)
-	}
-	render.JSON(w, r, results)
+	return result, errP
 }
 
 // Upserts a specific item based off the sourcedId
