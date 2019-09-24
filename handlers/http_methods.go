@@ -114,7 +114,7 @@ func PutNestedDoc(
 	obj string, field string,
 	w http.ResponseWriter, r *http.Request,
 ) {
-	err := render.DecodeJson(r.body, &data)
+	err := render.DecodeJSON(r.Body, &data)
 	if err != nil {
 		log.Info(err)
 		// TODO: fix response
@@ -125,24 +125,37 @@ func PutNestedDoc(
 		{"sourcedId", chi.URLParam(r, "id")},
 		{obj + "." + field, chi.URLParam(r, "subId")},
 	}
-	cur, _ := c.FindOne(
-		_,
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	count, _ := c.CountDocuments(
+		ctx,
 		filter,
-		options.Count(),
 	)
 	// update
-	if cur != 0 {
-		res, _ := c.UpdateOne(
-			_,
+	if count > 0 {
+		res, err := c.UpdateOne(
+			ctx,
 			filter,
 			bson.D{{"$set", bson.D{{obj + ".$", &data}}}},
 		)
+		if err != nil {
+			// TODO: return 500?
+			log.Info(err)
+		}
+		// TODO: return success update
+		render.JSON(w, r, res)
+		return
 	}
 	// insert
-	res, _ := c.UpdateOne(
-		_,
+	res, err := c.UpdateOne(
+		ctx,
 		bson.D{{"sourcedId", chi.URLParam(r, "id")}},
 		bson.D{{"$addToSet", bson.D{{obj, &data}}}},
 	)
-	render.Json(w, r, res)
+	if err != nil {
+		log.Info(err)
+		// TODO: return 500?
+	}
+	// TODO: return success insert
+	render.JSON(w, r, res)
 }
