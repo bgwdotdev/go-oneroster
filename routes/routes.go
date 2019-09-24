@@ -39,23 +39,3 @@ func Routes(db *sql.DB, db2 *mongo.Client) *chi.Mux {
 	// r.Put("/orgs/{id}", handlers.PutOrg())
 	return r
 }
-
-var orgsCols = []string{"sourcedId",
-	"status",
-	"dateLastModified",
-	"name",
-	"type",
-	"identifier",
-	"parentSourcedId",
-}
-
-var asCols = []string{"sourcedId",
-	"status",
-	"dateLastModified",
-	"title",
-	"type",
-	"startDate",
-	"endDate",
-	"parentSourcedId",
-	"schoolYear",
-}
