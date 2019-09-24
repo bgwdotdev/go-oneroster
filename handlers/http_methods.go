@@ -107,3 +107,42 @@ func PutDoc(c *mongo.Collection, data interface{},
 	}
 	render.JSON(w, r, res)
 }
+
+// Performs an upsert operation to a nested array
+func PutNestedDoc(
+	c *mongo.Collection, data interface{},
+	obj string, field string,
+	w http.ResponseWriter, r *http.Request,
+) {
+	err := render.DecodeJson(r.body, &data)
+	if err != nil {
+		log.Info(err)
+		// TODO: fix response
+		render.JSON(w, r, err)
+		return
+	}
+	filter := bson.D{
+		{"sourcedId", chi.URLParam(r, "id")},
+		{obj + "." + field, chi.URLParam(r, "subId")},
+	}
+	cur, _ := c.FindOne(
+		_,
+		filter,
+		options.Count(),
+	)
+	// update
+	if cur != 0 {
+		res, _ := c.UpdateOne(
+			_,
+			filter,
+			bson.D{{"$set", bson.D{{obj + ".$", &data}}}},
+		)
+	}
+	// insert
+	res, _ := c.UpdateOne(
+		_,
+		bson.D{{"sourcedId", chi.URLParam(r, "id")}},
+		bson.D{{"$addToSet", bson.D{{obj, &data}}}},
+	)
+	render.Json(w, r, res)
+}
