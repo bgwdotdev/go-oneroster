@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -39,6 +40,13 @@ func GetCollection(
 		log.Error(err)
 	}
 	defer cur.Close(ctx)
+	totalCount, err := c.CountDocuments(
+		ctx,
+		filter,
+	)
+	if err != nil {
+		log.Error(err)
+	}
 	var results []bson.M
 	for cur.Next(ctx) {
 		var result bson.M
@@ -48,6 +56,8 @@ func GetCollection(
 		}
 		results = append(results, result)
 	}
+	w.Header().Set("X-Total-Count", strconv.FormatInt(totalCount, 10))
+	w.Header().Set("Link", helpers.GetLinkHeaders(totalCount, r))
 	return results, errP
 }
 
