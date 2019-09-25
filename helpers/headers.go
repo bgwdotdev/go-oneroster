@@ -3,21 +3,23 @@ package helpers
 import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"net/http"
 	"net/url"
 	"strconv"
 )
 
 // returns the relevant link headers for a given query
-func GetLinkHeaders(totalCount int64, q url.Values) string {
+func GetLinkHeaders(totalCount int64, r *http.Request) string {
 	var link string
+	q := r.URL.Query()
 	offset, limit := parseOffsetLimit(q)
 	no, nl := nextOffsetLimit(totalCount, offset, limit)
 	if ok := testNextHeader(totalCount, no); ok {
-		link += buildLinkHeader(q, "next", no, nl)
+		link += buildLinkHeader(r, "next", no, nl)
 	}
 	po, pl := prevOffsetLimit(totalCount, offset, limit)
 	if ok := testPrevHeader(offset); ok {
-		link += buildLinkHeader(q, "prev", po, pl)
+		link += buildLinkHeader(r, "prev", po, pl)
 	}
 	return link
 }
@@ -62,7 +64,6 @@ func nextOffsetLimit(totalCount, offset, limit int64) (int64, int64) {
 	if totalCount < offset+limit {
 		nextLimit = totalCount - offset
 	}
-
 	nextOffset := offset + nextLimit
 	return nextOffset, nextLimit
 }
@@ -84,10 +85,12 @@ func testNextHeader(totalCount, nextOffset int64) bool {
 }
 
 // creates a link header string
-func buildLinkHeader(q url.Values, ref string, limit, offset int64) string {
+func buildLinkHeader(r *http.Request, ref string, limit, offset int64) string {
+	u := r.URL.Scheme + r.URL.Host + r.URL.Path
+	q := r.URL.Query()
 	return fmt.Sprintf(
 		"<%v?limit=%v&offset=%v&%v>; ref=\"%v\",\n",
-		"URLROOT",
+		u,
 		limit,
 		offset,
 		parseExistingParams(q),
