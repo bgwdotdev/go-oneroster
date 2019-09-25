@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/fffnite/go-oneroster/internal/database"
-	"github.com/fffnite/go-oneroster/routes"
+	"github.com/fffnite/go-oneroster/internal/routes"
 	"github.com/go-chi/chi"
 	"net/http"
 )

@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"github.com/fffnite/go-oneroster/conf"
-	"github.com/fffnite/go-oneroster/handlers"
+	"github.com/fffnite/go-oneroster/internal/conf"
+	"github.com/fffnite/go-oneroster/internal/handlers"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jwtauth"

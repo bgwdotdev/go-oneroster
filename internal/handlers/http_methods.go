@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"context"
-	"github.com/fffnite/go-oneroster/helpers"
+	"github.com/fffnite/go-oneroster/internal/helpers"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	log "github.com/sirupsen/logrus"
