@@ -85,14 +85,14 @@ func testNextHeader(totalCount, nextOffset int64) bool {
 }
 
 // creates a link header string
-func buildLinkHeader(r *http.Request, ref string, limit, offset int64) string {
+func buildLinkHeader(r *http.Request, ref string, offset, limit int64) string {
 	u := r.URL.Scheme + r.URL.Host + r.URL.Path
 	q := r.URL.Query()
 	return fmt.Sprintf(
-		"<%v?limit=%v&offset=%v&%v>; ref=\"%v\",\n",
+		"<%v?offset=%v&limit=%v&%v>; rel=\"%v\",\n",
 		u,
-		limit,
 		offset,
+		limit,
 		parseExistingParams(q),
 		ref,
 	)
