@@ -1,11 +1,9 @@
 package main
 
 import (
-	"github.com/fffnite/go-oneroster/conf"
-	data "github.com/fffnite/go-oneroster/db"
-	"github.com/fffnite/go-oneroster/routes"
+	"github.com/fffnite/go-oneroster/internal/database"
+	"github.com/fffnite/go-oneroster/internal/routes"
 	"github.com/go-chi/chi"
-	_ "github.com/mattn/go-sqlite3"
 	"net/http"
 )
 
@@ -21,13 +19,10 @@ func catch(err error) {
 }
 
 func main() {
-	c, err := conf.Read()
-	catch(err)
 	r := chi.NewRouter()
 
 	// Create DB connection and execute
-	db := data.ConnectDatabase(c)
-	defer db.Close()
+	db := database.ConnectDb()
 
 	// Creates a users endpoint that can have different methods attached to it
 	r.Route("/v1", func(r chi.Router) {
