@@ -1,4 +1,8 @@
 build:
+	go build \
+		-o goors \
+		cmd/goors/main.go
+static:
 	CGO_ENABLED=1 \
 	GOOS=linux \
 	go build \
