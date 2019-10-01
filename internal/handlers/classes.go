@@ -18,8 +18,8 @@ type classes struct {
 	Location         string    `json:"location" bson:"location,omitempty"`
 	Grades           []string  `json:"grades" bson:"grades,omitempty"`
 	Subjects         []string  `json:"subjects" bson:"subjects,omitempty"`
-	Course           string    `json:"course" bson:"course,omitempty"`
-	School           string    `json:"school" bson:"school,omitempty"`
+	Course           *Nested   `json:"course" bson:"course,omitempty"`
+	School           *Nested   `json:"school" bson:"school,omitempty"`
 	Terms            []*Nested `json:"terms" bson:"terms,omitempty"`
 	SubjectCodes     []string  `json:"subjectCodes" bson:"subjectCodes,omitempty"`
 	Periods          []string  `json:"periods" bson:"periods,omitempty"`
