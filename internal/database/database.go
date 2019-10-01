@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
@@ -10,8 +11,8 @@ import (
 
 // Use to connect to mongodb instance
 func ConnectDb() *mongo.Client {
-	// TODO: load env for URI
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
+	dbconn := viper.GetString("mongo_uri")
+	client, err := mongo.NewClient(options.Client().ApplyURI(dbconn))
 	if err != nil {
 		log.Error(err)
 	}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/fffnite/go-oneroster/internal/conf"
 	"github.com/fffnite/go-oneroster/internal/database"
 	"github.com/fffnite/go-oneroster/internal/routes"
 	"github.com/go-chi/chi"
@@ -19,6 +20,8 @@ func catch(err error) {
 }
 
 func main() {
+	conf.LoadEnvs()
+
 	r := chi.NewRouter()
 
 	// Create DB connection and execute
