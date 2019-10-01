@@ -28,7 +28,7 @@ func main() {
 	db := database.ConnectDb()
 
 	// Creates a users endpoint that can have different methods attached to it
-	r.Route("/v1", func(r chi.Router) {
+	r.Route("/ims/oneroster/v1p1", func(r chi.Router) {
 		r.Mount("/", routes.Routes(db))
 	})
 
