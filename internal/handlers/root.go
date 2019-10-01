@@ -5,5 +5,5 @@ import (
 )
 
 func HelloWorld(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello, World!"))
+	w.Write([]byte("https://github.com/fffnite/go-oneroster"))
 }
