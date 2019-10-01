@@ -1,12 +1,24 @@
 package handlers
 
 import (
+	"github.com/fffnite/go-oneroster/ormodel"
 	"github.com/go-chi/render"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 	"time"
 )
+
+var orgCols = []string{
+	"sourcedId",
+	"status",
+	"dateLastModified",
+	"name",
+	"type",
+	"identifier",
+	"parent",
+	"children",
+}
 
 func GetAllOrgs(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -35,30 +47,8 @@ func GetOrg(client *mongo.Client) http.HandlerFunc {
 func PutOrg(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		collection := client.Database("oneroster").Collection("orgs")
-		var data Org
+		var data ormodel.Orgs
 		data.DateLastModified = time.Now()
 		PutDoc(collection, &data, w, r)
 	}
-}
-
-type Org struct {
-	SourcedId        string    `json:"sourcedId" bson:"sourcedId,omitempty"`
-	Status           string    `json:"status" bson:"status,omitempty"`
-	DateLastModified time.Time `json:"dateLastModified" bson:"dateLastModified,omitempty"`
-	Name             string    `json:"name" bson:"name,omitempty"`
-	Type             string    `json:"type" bson:"type,omitempty"`
-	Identifier       string    `json:"identifier" bson:"identifier,omitempty"`
-	Parent           *Nested   `json:"parent" bson:"parent,omitempty"`
-	Children         []*Nested `json:"children" bson:"children,omitempty"`
-}
-
-var orgCols = []string{
-	"sourcedId",
-	"status",
-	"dateLastModified",
-	"name",
-	"type",
-	"identifier",
-	"parent",
-	"children",
 }
