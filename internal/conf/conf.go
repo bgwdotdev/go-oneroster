@@ -18,10 +18,6 @@ func init() {
 	)
 	viper.BindPFlag("auth_key", flag.Lookup("auth-key"))
 	viper.BindEnv("auth_key")
-	if viper.GetString("auth_key") == "" {
-		log.Error("No oauth2 key set: goors -k")
-		os.Exit(2)
-	}
 
 	flag.StringP(
 		"auth-key-alg",
@@ -40,12 +36,18 @@ func init() {
 	)
 	viper.BindPFlag("mongo_uri", flag.Lookup("mongo-uri"))
 	viper.BindEnv("mongo_uri")
-	if viper.GetString("mongo_uri") == "" {
-		log.Error("No mongo uri set: goors -m")
-		os.Exit(2)
-	}
 }
 
 func LoadEnvs() {
 	flag.Parse()
+
+	if viper.GetString("mongo_uri") == "" {
+		log.Error("No mongo uri set: goors -m")
+		os.Exit(2)
+	}
+
+	if viper.GetString("auth_key") == "" {
+		log.Error("No oauth2 key set: goors -k")
+		os.Exit(2)
+	}
 }
