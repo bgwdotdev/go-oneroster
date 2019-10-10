@@ -12,7 +12,9 @@ Start up the api server with either envs or flags
 ```
 goors \
     -k "mySecretKey" \
+    -a "HS256" \
     -m "mongodb://myinstance.domain.com:27017" \
+    -p "443"
 ```
 
 ### envs
@@ -21,6 +23,7 @@ goors \
 GOORS_AUTH_KEY='mySecretKey'
 GOORS_AUTH_KEY_ALG='HS256'
 GOORS_MONGO_URI='mongodb://myinstance.domain.com:27017'
+GOORS_PORT='443'
 ```
 
 ### Upload Data

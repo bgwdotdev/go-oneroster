@@ -36,6 +36,15 @@ func init() {
 	)
 	viper.BindPFlag("mongo_uri", flag.Lookup("mongo-uri"))
 	viper.BindEnv("mongo_uri")
+
+	flag.StringP(
+		"port",
+		"p",
+		"80",
+		"Port to expose API on",
+	)
+	viper.BindPFlag("port", flag.Lookup("port"))
+	viper.BindEnv("port")
 }
 
 func LoadEnvs() {

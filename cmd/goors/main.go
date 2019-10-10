@@ -5,6 +5,7 @@ import (
 	"github.com/fffnite/go-oneroster/internal/database"
 	"github.com/fffnite/go-oneroster/internal/routes"
 	"github.com/go-chi/chi"
+	"github.com/spf13/viper"
 	"net/http"
 )
 
@@ -33,5 +34,5 @@ func main() {
 	})
 
 	// Starts the webserver with the Router
-	http.ListenAndServe(":3000", r)
+	http.ListenAndServe(":"+viper.GetString("port"), r)
 }
