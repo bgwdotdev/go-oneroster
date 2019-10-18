@@ -1,15 +1,14 @@
-FROM scratch
+FROM golang:latest as builder
 
-COPY ./conf/conf.yaml /conf/conf.yaml
-COPY OneRoster.sqlite3 .
-COPY credstore .
-COPY gorapi-static /
+WORKDIR /go/src/github.com/fffnite/go-oneroster
+ADD . /go/src/github.com/fffnite/go-oneroster
 
-EXPOSE 3000/tcp
+WORKDIR ./cmd/goors
 
-ENV GOR_AUTH_KEY='secret'
-ENV GOR_AUTH_KEYALG='HS256'
-ENV GOR_AUTH_DBDRIVER='sqlite3'
-ENV GOR_AUTH_DBNAME='credstore'
+RUN go get -d -v
 
-CMD ["/gorapi-static"]
+RUN CGO_ENABLED=0 go build -o /go/bin/goors
+
+FROM gcr.io/distroless/static
+COPY --from=builder /go/bin/goors /
+CMD ["/goors"]
