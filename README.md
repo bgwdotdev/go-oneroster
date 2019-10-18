@@ -3,6 +3,32 @@
 This project aims to implement a OneRoster compliant RESTful API
 webserver in GO with a MongoDB backing for persistance
 
+A detailed overview of the OneRoster specification can be found on the
+[OneRoster site](https://www.imsglobal.org/oneroster-v11-final-specification)
+, including: 
+* filtering
+* data structures
+* endpoints
+* JSON bindings
+
+This API server attempts to extend the oneroster spec by allowing
+updating/insert/upserting/PUT content to all endpoints rather than just providing
+a read/GET interface for data.
+
+## Companion projects
+
+Assisting this project is a collection of open tools for syncing
+to and from various 3rd party SIS/MIS/systems
+
+To: 
+* [Microsoft Teams](https://github.com/the-glasgow-academy/oneroster-api-to-csv-sds)
+* [Apple School Manager](https://github.com/the-glasgow-academy/oneroster-api-to-csv-asm)
+
+From:
+* [WCBS PASS](https://github.com/fffnite/go-oneroster-sis-sync)
+
+With more to come. Further community support is welcome and encouraged.
+
 ## Download
 
 Pre-build binaries for windows and linux x64 are available in 
@@ -37,7 +63,7 @@ GOORS_PORT='443'
 ### Upload Data
 
 Import data using the 
-(sis sync tool)[https://github.com/fffnite/go-oneroster-sis-sync]
+[sis sync tool](https://github.com/fffnite/go-oneroster-sis-sync)
 or by making POST requests.
 
 
@@ -84,6 +110,40 @@ $getUsers = @{
     FollowRelLink = $true
 }
 Invoke-RestMethod @getUsers
+```
+
+## Endpoints
+
+Listed are all the currently supported endpoints. Details of 
+the fields supported/output by these endpoints can be found
+on the OneRoster API 
+[docs](https://www.imsglobal.org/oneroster-v11-final-specification#_Toc480452033)
+
+```
+GET /orgs
+GET /orgs/{id}
+PUT /orgs/{id}
+
+GET /academicSessions
+GET /academicSessions/{id}
+PUT /academicSessions/{id}
+
+GET /courses
+GET /courses/{id}
+PUT /courses/{id}
+
+GET /classes
+GET /classes/{id}
+PUT /classes
+
+GET /enrollments
+GET /enrollments/{id}
+PUT /enrollments/{id}
+
+GET /users
+GET /users/{id}
+PUT /users/{id}
+PUT /users/{id}/userIds/{subId}
 ```
 
 ## To Do
