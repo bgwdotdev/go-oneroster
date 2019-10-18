@@ -3,6 +3,14 @@
 This project aims to implement a OneRoster compliant RESTful API
 webserver in GO with a MongoDB backing for persistance
 
+## Download
+
+Pre-build binaries for windows and linux x64 are available in 
+the releases section as well as a pre-built docker image is 
+available:
+
+`docker pull docker.pkg.github.com/fffnite/go-oneroster/goors:0.3.0`
+
 ## Setup
 
 Start up the api server with either envs or flags
