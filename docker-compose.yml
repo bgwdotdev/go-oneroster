@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+    api:
+        image: docker.pkg.github.com/fffnite/go-oneroster/goors:0.3.0
+        environment:
+            GOORS_MONGO_URI: mongodb://database
+        env_file:
+          - .env
+        depends_on:
+          - database
+        labels:
+          - traefik.enable=true
+          - traefik.http.routers.goors.tls=true
+          - traefik.http.routers.goors.rule=Host(`or.localhost`)
+          - traefik.http.routers.goors.entrypoints=web
+    database:
+        image: mongo
+        volumes:
+            - /tmp/data/db:/data/db
+    reverse-proxy:
+        image: traefik
+        command: 
+          - --providers.docker
+          - --entrypoints.web.address=:443
+        ports:
+          - 443:443
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
