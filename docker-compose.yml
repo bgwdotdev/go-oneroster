@@ -1,7 +1,7 @@
 version: "3.7"
 services:
     api:
-        image: docker.pkg.github.com/fffnite/go-oneroster/goors:0.3.0
+        image: docker.pkg.github.com/fffnite/go-oneroster/goors:0.3.1
         environment:
             GOORS_MONGO_URI: mongodb://database
         env_file:
@@ -11,11 +11,13 @@ services:
         labels:
           - traefik.enable=true
           - traefik.http.routers.goors.tls=true
+            # Set domain name for your domain
           - traefik.http.routers.goors.rule=Host(`or.localhost`)
           - traefik.http.routers.goors.entrypoints=web
     database:
         image: mongo
         volumes:
+            # Set database directory to non temp folder
             - /tmp/data/db:/data/db
     reverse-proxy:
         image: traefik
