@@ -27,6 +27,9 @@ To:
 From:
 * [WCBS PASS](https://github.com/fffnite/go-oneroster-sis-sync)
 
+Credential Management:
+* [gor-cli](https://github.com/fffnite/gor-cli)
+
 With more to come. Further community support is welcome and encouraged.
 
 ## Download
@@ -35,7 +38,7 @@ Pre-build binaries for windows and linux x64 are available in
 the releases section as well as a pre-built docker image is 
 available:
 
-`docker pull docker.pkg.github.com/fffnite/go-oneroster/goors:0.3.0`
+`docker pull docker.pkg.github.com/fffnite/go-oneroster/goors:0.3.1`
 
 ## Setup
 
@@ -69,11 +72,15 @@ or by making POST requests.
 
 ## Query examples
 
+Bash
 ```bash
 # login
-curl "myserver.domain.com/ims/oneroster/v1p1/login" \
+token=$(curl "myserver.domain.com/ims/oneroster/v1p1/login" \
     -X POST \
-    -d "clientid=$ci&clientsecret=$cs"
+    -d "clientid=$ci&clientsecret=$cs")
+
+# Remove quotes from token
+t=${token:1:-1}
 
 # Upsert user id 1
 curl "myserver.domain.com/ims/oneroster/v1p1/users/1" \
@@ -86,6 +93,7 @@ curl "myserver.domain.com/ims/oneroster/v1p1/users" \
     -H "Authorization: Bearer $t"
 ```
 
+PowerShell
 ```powershell
 # login
 $args = @{
@@ -93,7 +101,7 @@ $args = @{
     method = "POST"
     body = @{ "clientid" = $ci; "clientsecret" = $cs }
 }
-$token = Invoke-RestMethod @args
+$t = Invoke-RestMethod @args
 
 # Upsert user id 1
 $upsert = @{
@@ -106,7 +114,7 @@ Invoke-RestMethod @upsert
 
 $getUsers = @{
     uri = "http://myserver.domain.com/ims/oneroster/v1p1/users"
-    heades = @{ "authorization" = "bearer $t" }
+    headers = @{ "authorization" = "bearer $t" }
     FollowRelLink = $true
 }
 Invoke-RestMethod @getUsers
@@ -120,6 +128,8 @@ on the OneRoster API
 [docs](https://www.imsglobal.org/oneroster-v11-final-specification#_Toc480452033)
 
 ```
+POST /login
+
 GET /orgs
 GET /orgs/{id}
 PUT /orgs/{id}
