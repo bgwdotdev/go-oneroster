@@ -1,0 +1,12 @@
+[providers]
+    [providers.file]
+        filename = "/etc/traefik/traefik.toml"
+    [providers.docker]
+
+[entryPoints]
+    [entryPoints.web]
+        address = ":443"
+
+[tls.stores.default.defaultCertificate]
+    certFile = "/cert/cert.crt"
+    keyFile = "/cert/cert.key"
