@@ -62,6 +62,11 @@ func GetFilters(q url.Values, safeFields []string) (bson.D, error) {
 			fp := parseFilterPredicate(f)
 			fv := parseFilterValue(f)
 			doc := bson.D{{ff, bson.D{{fp, fv}}}}
+			ok := checkIsoDate(fv)
+			if ok {
+				dfv := convertIsoDate(fv)
+				doc = bson.D{{ff, bson.D{{fp, dfv}}}}
+			}
 			filter = append(filter, doc)
 		}
 		return bson.D{{lo, filter}}, nil

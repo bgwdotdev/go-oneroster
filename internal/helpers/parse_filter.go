@@ -2,8 +2,10 @@ package helpers
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
+	"time"
 )
 
 // parses the logical operator from a filter string
@@ -62,6 +64,22 @@ func parseFilterPredicate(s string) string {
 func parseFilterValue(s string) string {
 	r := regexp.MustCompile(`([']\S*['])`)
 	return removeSingleQuotes(r.FindString(s))
+}
+
+func checkIsoDate(s string) bool {
+	r := regexp.MustCompile(`([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))`)
+	if r.FindString(s) != "" {
+		return true
+	}
+	return false
+}
+
+func convertIsoDate(s string) time.Time {
+	filterTime, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		log.Error(err)
+	}
+	return filterTime
 }
 
 // removes single straight quotes from the start and end of a string
