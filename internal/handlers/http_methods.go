@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"github.com/fffnite/go-oneroster/internal/helpers"
+	// "github.com/fffnite/go-oneroster/ormodel"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	log "github.com/sirupsen/logrus"
@@ -82,6 +83,39 @@ func GetDoc(
 	}
 	return result, errP
 }
+
+/*
+// Unsure how to range over type in interface -- generics? reflection? other?
+// Upserts a large array of items based off each doc sourcedId
+func PutBulk(c *mongo.Collection, data ormodel.Data,
+	w http.ResponseWriter, r *http.Request) {
+
+	err := render.DecodeJSON(r.Body, &data)
+	if err != nil {
+		log.Info(err)
+		// TODO: fix reponse
+		render.JSON(w, r, err)
+		return
+	}
+
+	var queries []mongo.WriteModel
+	for _, v := range data {
+		q := mongo.NewUpdateOneModel()
+		q.SetUpsert(true)
+		q.SetFilter(bson.D{{"sourcedId", v.Id()}})
+		q.SetUpdate(bson.D{{"$set", v}})
+		queries = append(queries, q)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	res, err := c.BulkWrite(ctx, queries)
+	if err != nil {
+		log.Error(err)
+	}
+	render.JSON(w, r, res)
+}
+*/
 
 // Upserts a specific item based off the sourcedId
 func PutDoc(c *mongo.Collection, data interface{},
